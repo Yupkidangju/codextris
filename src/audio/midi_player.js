@@ -1,8 +1,8 @@
 ﻿/**
- * [v8.0.0/v3.12.0] 다이내믹 BGM 시스템 - 오디오 엔진
+ * [v8.0.0/v3.14.0] 다이내믹 BGM 시스템 - 오디오 엔진
  * Web Audio API 기반 8비트 스타일 시퀀서
  *
- * [v8.0.0/v3.12.0] 변경사항:
+ * [v8.0.0/v3.14.0] 변경사항:
  * - 다이내믹 BGM 시스템 추가 (Normal/Danger/Fever 상태)
  * - 위험 상태 자동 감지 (15줄 이상 채워짐)
  * - 크로스페이드 트랜지션 (1초)
@@ -11,6 +11,7 @@
  * - Adaptive Music 2.0: 긴장도/에너지/인커밍/보스 압박 기반 적응형 드라이브
  * - QA Layer용 오디오 디버그 스냅샷 및 이벤트 기반 임팩트 큐
  * - Combat Orchestration: 패턴/합성/규칙 공격/Neon Shift 이벤트 프레이즈 추가
+ * - [v3.14.0] Layer Counter/Shift 종료 프레이즈 추가
  */
 
 export class AudioEngine {
@@ -42,6 +43,7 @@ export class AudioEngine {
     this.currentTrackIndex = 0;
     this.currentTrackStateMode = "normal";
     this.recentTrackIndexes = [];
+    this.phraseCooldowns = {};
     this.isPlaying = false;
     this.tempo = 130; // BPM
     this.stepInterval = null;
@@ -371,6 +373,10 @@ export class AudioEngine {
     if (!this.ctx || this.muted) return;
 
     const gainScale = this.lowStimAudio ? 0.68 : 1;
+    const key = `${type}:${meta.tag || meta.type || meta.source || meta.tier || meta.phase || "default"}`;
+    const now = performance.now();
+    if ((this.phraseCooldowns[key] || 0) > now) return;
+    this.phraseCooldowns[key] = now + (type === "comboTier" ? 420 : 260);
 
     if (type === "pattern") {
       switch (meta.tag) {
@@ -427,6 +433,58 @@ export class AudioEngine {
       const root = roots[meta.type] || 392;
       this.boop(root, 0.08, "triangle", 0.07 * gainScale, "voice");
       setTimeout(() => this.boop(root * 1.25, 0.12, "square", 0.08 * gainScale, "voice"), 55);
+      return;
+    }
+
+    if (type === "comboTier") {
+      const roots = { 1: 392, 2: 523.25, 3: 659.25 };
+      const root = roots[meta.tier] || 392;
+      this.boop(root, 0.06, "triangle", 0.06 * gainScale, "voice");
+      setTimeout(() => this.boop(root * 1.2, 0.08, "square", 0.07 * gainScale, "voice"), 42);
+      setTimeout(() => this.boop(root * 1.5, 0.12, "sawtooth", 0.08 * gainScale, "voice"), 90);
+      return;
+    }
+
+    if (type === "bossSignature") {
+      const root = 220 + ((Number(meta.phase) || 1) * 36);
+      this.duckBgm(0.8, 0.2);
+      this.hit(root, 0.12, 0.2 * gainScale, "voice");
+      setTimeout(() => this.boop(root * 2.1, 0.12, "sawtooth", 0.08 * gainScale, "voice"), 70);
+      return;
+    }
+
+    if (type === "resonance") {
+      const roots = {
+        forge: 587.33,
+        guard: 349.23,
+        scan: 783.99,
+        surge: 440,
+      };
+      const root = roots[meta.type] || 523.25;
+      this.duckBgm(0.76, 0.18);
+      this.boop(root, 0.07, "triangle", 0.07 * gainScale, "voice");
+      setTimeout(() => this.boop(root * 1.33, 0.11, "square", 0.08 * gainScale, "voice"), 48);
+      return;
+    }
+
+    if (type === "counter") {
+      const roots = {
+        forge: 523.25,
+        guard: 392,
+        scan: 698.46,
+        surge: 440,
+      };
+      const root = roots[meta.type] || 523.25;
+      this.duckBgm(0.74, 0.16);
+      this.boop(root, 0.06, "triangle", 0.07 * gainScale, "voice");
+      setTimeout(() => this.hit(root * 0.34, 0.08, 0.16 * gainScale, "voice"), 36);
+      setTimeout(() => this.boop(root * 1.5, 0.1, "sawtooth", 0.08 * gainScale, "voice"), 80);
+      return;
+    }
+
+    if (type === "shiftEnd") {
+      this.boop(349.23, 0.05, "triangle", 0.045 * gainScale, "voice");
+      setTimeout(() => this.boop(293.66, 0.08, "sine", 0.04 * gainScale, "voice"), 45);
     }
   }
 

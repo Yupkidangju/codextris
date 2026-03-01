@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.12.0] 플레이어 상태 관리
+ * [v3.14.0] 플레이어 상태 관리
  * 
  * 작성일: 2026-02-28
  * 변경사항:
@@ -8,6 +8,7 @@
  *   - [v3.9.0] Rule-Break Boss 상태 필드 추가
  *   - [v3.11.0] 피버 변형 상태 필드 추가
  *   - [v3.12.0] Neon Shift/Residue 레이어 상태 추가
+ *   - [v3.14.0] 레이어 카운터/Shift 종료/임시 아이템 부스트 상태 추가
  */
 
 import { PIECES } from "./pieces.js";
@@ -75,6 +76,12 @@ export function createPlayerState(id, bag) {
     neonShiftUntil: 0,    // [v3.12.0] 네온 레이어 각성 지속 시간
     neonShiftSource: "",  // [v3.12.0] 최근 Shift 발동 원인
     neonResidueRows: [],  // [v3.12.0] 네온 잔상 행 목록
+    neonResonanceUntil: 0, // [v3.13.0] 레이어 공명 내부 쿨다운
+    neonCounterCooldownUntil: 0, // [v3.14.0] 레이어 카운터 내부 쿨다운
+    neonItemBoostUntil: 0, // [v3.14.0] Surge Echo 이후 임시 아이템 부스트 지속 시간
+    layerCounterUntil: 0,  // [v3.14.0] 최근 레이어 카운터 상태 칩 지속 시간
+    layerCounterLabel: "", // [v3.14.0] 최근 레이어 카운터 이름
+    neonShiftWasActive: false, // [v3.14.0] Shift 종료 이벤트 감지를 위한 이전 프레임 상태
     stackHeight: 0,       // 현재 스택 높이
     bossHp: 100,          // 보스 HP UI용 값
     bossModeActive: false,

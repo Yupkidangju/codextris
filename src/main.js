@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.12.0] 메인 엔트리 포인트
+ * [v3.14.0] 메인 엔트리 포인트
  * 
  * 작성일: 2026-03-01
  * 변경사항: 
@@ -15,6 +15,8 @@
  *   - [v3.10.0] 패턴 공격 문법 콜아웃/라벨 통합
  *   - [v3.11.0] 스킬 합성과 피버 변형 HUD/미리보기 통합
  *   - [v3.12.0] Neon Shift/Residue HUD와 Combat Orchestration 오디오 연동
+ *   - [v3.13.0] Layer Resonance, 상태 HUD 우선순위 정리, Orchestration 2.0 연동
+ *   - [v3.14.0] Layer Counter Matrix, Shift 종료 이벤트, DEV 메타 확장
  */
 
 import { createGame } from "./game/core/engine.js";
@@ -206,8 +208,10 @@ const achievementSystem = initAchievements(showAchievementNotification, () => {
   audio.playAchievementUnlockSound?.();
 });
 
-const SETTINGS_STORAGE_KEY = "codextirs.settings.v3.12.0";
+const SETTINGS_STORAGE_KEY = "codextirs.settings.v3.14.0";
 const LEGACY_SETTINGS_STORAGE_KEYS = [
+  "codextirs.settings.v3.13.0",
+  "codextirs.settings.v3.12.0",
   "codextirs.settings.v3.8.0",
   "codextirs.settings.v3.5.0",
   "codextirs.settings.v3.3.0",
@@ -419,6 +423,9 @@ function createSessionDiagnostics() {
     audioResumes: 0,
     audioStateChanges: 0,
     visibilityPauses: 0,
+    neonShiftActivations: 0,
+    resonanceTriggers: 0,
+    layerCounters: 0,
     lastError: "none",
     errors: [],
     snapshots: [],
@@ -790,19 +797,27 @@ function syncDevPanel() {
     touchDebugAction.textContent = touchMetrics.lastAction;
   }
   if (touchDebugMeta) {
-    touchDebugMeta.textContent = `press:${sessionDiagnostics.inputPresses} · repeat:${sessionDiagnostics.inputRepeats} · buffer:${sessionDiagnostics.bufferedInputs}`;
+    touchDebugMeta.textContent = `press:${touchMetrics.presses} · repeat:${touchMetrics.repeats} · last:${touchMetrics.lastDeltaMs}ms · shift:${sessionDiagnostics.neonShiftActivations} · resonance:${sessionDiagnostics.resonanceTriggers} · counter:${sessionDiagnostics.layerCounters}`;
   }
   if (devFpsMeta) {
     devFpsMeta.textContent = `fps:${Math.round(sessionDiagnostics.currentFps || 0)} · avg:${Math.round(sessionDiagnostics.avgFps || 0)} · min:${Math.round(sessionDiagnostics.minFps || 0)}`;
   }
   if (devAudioMeta) {
     const audioSnapshot = audio.getAudioDebugSnapshot?.() || {};
-    devAudioMeta.textContent = `audio:${audioSnapshot.ctxState || "idle"} · bgm:${audioSnapshot.bgmState || "normal"} · track:${audioSnapshot.trackName || "-"}`;
+    devAudioMeta.textContent = `audio:${audioSnapshot.ctxState || "idle"} · bgm:${audioSnapshot.bgmState || "normal"} · drive:${audioSnapshot.driveLabel || "-"} · track:${audioSnapshot.trackName || "-"}`;
   }
   if (devGameMeta) {
     const incomingCount = game?.getIncomingAttacks?.("player")?.length || 0;
     const aiState = game?.getState?.("ai");
-    devGameMeta.textContent = `boss:${getBossPhase(aiState)} · incoming:${incomingCount} · paused:${hasStarted ? !game?.isRunning?.() : false}`;
+    const playerState = game?.getState?.("player");
+    const shiftActive = !!playerState && (playerState.neonShiftUntil || 0) > performance.now();
+    const residueCount = Array.isArray(playerState?.neonResidueRows)
+      ? playerState.neonResidueRows.filter((entry) => (entry?.until || 0) > performance.now()).length
+      : 0;
+    const counterLabel = playerState && (playerState.layerCounterUntil || 0) > performance.now()
+      ? (playerState.layerCounterLabel || "on")
+      : "off";
+    devGameMeta.textContent = `boss:${getBossPhase(aiState)} · incoming:${incomingCount} · shift:${shiftActive ? "on" : "off"} · residue:${residueCount} · counter:${counterLabel}`;
   }
   if (devErrorMeta) {
     devErrorMeta.textContent = `error:${sessionDiagnostics.lastError || "none"}`;
@@ -1212,6 +1227,13 @@ function formatRemainingTime(seconds) {
   return `${Math.max(0.1, seconds).toFixed(seconds >= 10 ? 0 : 1)}s`;
 }
 
+function getComboPhraseTier(combo) {
+  if (combo >= 10) return 3;
+  if (combo >= 7) return 2;
+  if (combo >= 4) return 1;
+  return 0;
+}
+
 function renderStatusEffects(playerState) {
   if (!statusEffects || !statusCountValue) return;
   if (!hasStarted || !playerState) {
@@ -1226,36 +1248,56 @@ function renderStatusEffects(playerState) {
   const effects = [];
 
   if (fever.active) {
-    effects.push({ label: `FEVER ${fever.label || "FORGE"}`, time: fever.remainingTime, tone: "buff" });
+    effects.push({ label: `FEVER ${fever.label || "FORGE"}`, time: fever.remainingTime, tone: "buff", priority: 105 });
   }
   const neonShiftRemain = ((playerState.neonShiftUntil || 0) - now) / 1000;
   if (neonShiftRemain > 0) {
-    effects.push({ label: "SHIFT", time: neonShiftRemain, tone: "neon" });
+    effects.push({ label: "SHIFT", time: neonShiftRemain, tone: "neon", priority: 110 });
   }
   const blindRemain = ((skillManager.activeEffects?.blind?.endTime || 0) - now) / 1000;
   if (blindRemain > 0) {
-    effects.push({ label: "BLIND", time: blindRemain, tone: "debuff" });
+    effects.push({ label: "BLIND", time: blindRemain, tone: "debuff", priority: 85 });
   }
   const reflectRemain = ((skillManager.activeEffects?.garbageReflect?.endTime || 0) - now) / 1000;
   if (reflectRemain > 0) {
-    effects.push({ label: "REFLECT", time: reflectRemain, tone: "buff" });
+    effects.push({ label: "REFLECT", time: reflectRemain, tone: "buff", priority: 70 });
+  }
+
+  const residueCount = Array.isArray(playerState.neonResidueRows)
+    ? playerState.neonResidueRows.filter((entry) => (entry?.until || 0) > now).length
+    : 0;
+  if (residueCount > 0) {
+    effects.push({ label: `RESIDUE x${residueCount}`, time: 99, tone: "neon", priority: 60 });
+  }
+  const layerCounterRemain = ((playerState.layerCounterUntil || 0) - now) / 1000;
+  if (layerCounterRemain > 0) {
+    effects.push({ label: playerState.layerCounterLabel || "COUNTER", time: layerCounterRemain, tone: "buff", priority: 97 });
+  }
+  const itemBoostRemain = ((playerState.neonItemBoostUntil || 0) - now) / 1000;
+  if (itemBoostRemain > 0) {
+    effects.push({ label: "SURGE+", time: itemBoostRemain, tone: "buff", priority: 66 });
   }
 
   [
-    ["DARK", (playerState.darknessUntil - now) / 1000, "debuff"],
-    ["MIRROR", (playerState.mirrorMoveUntil - now) / 1000, "debuff"],
-    ["CORRUPT", (playerState.corruptNextUntil - now) / 1000, "warning"],
-    ["JOLT", (playerState.gravityJoltUntil - now) / 1000, "warning"],
-    ["STAGGER", (playerState.inputDelayUntil - now) / 1000, "warning"],
-    ["HOLD LOCK", (playerState.holdLockUntil - now) / 1000, "warning"],
-    ["GHOST OFF", (playerState.ghostHiddenUntil - now) / 1000, "debuff"],
-    ["ROT TAX", (playerState.rotationTaxUntil - now) / 1000, "warning"],
-    ["LEECH", (playerState.gaugeLeechUntil - now) / 1000, "warning"],
-    ["SCRAMBLE", (playerState.nextScrambleUntil - now) / 1000, "debuff"],
-  ].forEach(([label, time, tone]) => {
+    ["DARK", (playerState.darknessUntil - now) / 1000, "debuff", 98],
+    ["MIRROR", (playerState.mirrorMoveUntil - now) / 1000, "debuff", 96],
+    ["CORRUPT", (playerState.corruptNextUntil - now) / 1000, "warning", 78],
+    ["JOLT", (playerState.gravityJoltUntil - now) / 1000, "warning", 72],
+    ["STAGGER", (playerState.inputDelayUntil - now) / 1000, "warning", 92],
+    ["HOLD LOCK", (playerState.holdLockUntil - now) / 1000, "warning", 102],
+    ["GHOST OFF", (playerState.ghostHiddenUntil - now) / 1000, "debuff", 90],
+    ["ROT TAX", (playerState.rotationTaxUntil - now) / 1000, "warning", 100],
+    ["LEECH", (playerState.gaugeLeechUntil - now) / 1000, "warning", 94],
+    ["SCRAMBLE", (playerState.nextScrambleUntil - now) / 1000, "debuff", 88],
+  ].forEach(([label, time, tone, priority]) => {
     if (time > 0) {
-      effects.push({ label, time, tone });
+      effects.push({ label, time, tone, priority });
     }
+  });
+
+  effects.sort((a, b) => {
+    if ((b.priority || 0) !== (a.priority || 0)) return (b.priority || 0) - (a.priority || 0);
+    return (a.time || 0) - (b.time || 0);
   });
 
   statusCountValue.textContent = String(effects.length);
@@ -1264,11 +1306,13 @@ function renderStatusEffects(playerState) {
     return;
   }
 
-  statusEffects.innerHTML = effects
-    .slice(0, 6)
+  const visibleEffects = effects.slice(0, 5);
+  const hiddenCount = Math.max(0, effects.length - visibleEffects.length);
+  statusEffects.innerHTML = visibleEffects
     .map(({ label, time, tone }) => {
       return `<div class="status-chip ${tone}"><span class="status-name">${label}</span><span class="status-time">${formatRemainingTime(time)}</span></div>`;
     })
+    .concat(hiddenCount > 0 ? [`<div class="status-chip meta"><span class="status-name">+${hiddenCount} MORE</span></div>`] : [])
     .join("");
 }
 
@@ -1366,6 +1410,7 @@ function maybeShowContextHints(playerState) {
   if (bossPhase > lastBossPhase && bossPhase > 0) {
     impact.bossPhase?.(bossPhase);
     audio.playImpactCue?.("bossPhase", { phase: bossPhase });
+    audio.playCombatPhrase?.("bossSignature", { phase: bossPhase });
     game.activateNeonShift?.("player", "boss", 4200, false);
     showBattleCallout(`BOSS PHASE ${bossPhase}`, bossPhase === 3 ? "ENRAGED" : "PATTERN SHIFT", "warn", "boss");
   }
@@ -1817,6 +1862,9 @@ function handleGameEvent(evt, data) {
       break;
       
     case "attacked":
+      if (data?.target === "player" && data?.countered) {
+        break;
+      }
       if ((data?.amount || 0) > 0 || data?.type !== "GarbagePush") {
         impact.pulse(1.3);
         audio.triggerSfx("damage", 1.0);
@@ -1873,6 +1921,12 @@ function handleGameEvent(evt, data) {
     case "combo":
       showCombo(data.combo);
       audio.playComboSound?.(data.combo);
+      if (data?.owner === "player") {
+        const comboTier = getComboPhraseTier(data.combo);
+        if (comboTier > 0) {
+          audio.playCombatPhrase?.("comboTier", { tier: comboTier });
+        }
+      }
       if (data?.owner === "player" && data.combo >= 7) {
         showBattleCallout(`${data.combo} COMBO`, "CHAIN CONTINUES", "gold", "combo");
       }
@@ -1978,6 +2032,9 @@ function handleGameEvent(evt, data) {
       break;
 
     case "neonShift":
+      if (data?.owner === "player") {
+        sessionDiagnostics.neonShiftActivations += 1;
+      }
       audio.playCombatPhrase?.("neonShift", { source: data?.source });
       if (data?.owner === "player") {
         const sourceLabel = {
@@ -1987,6 +2044,34 @@ function handleGameEvent(evt, data) {
           boss: "BOSS PRESSURE",
         };
         showBattleCallout("NEON SHIFT", sourceLabel[data?.source] || "LAYER ONLINE", "gold", "fever");
+      }
+      break;
+
+    case "neonShiftEnd":
+      if (data?.owner === "player") {
+        impact.shiftFade?.();
+        audio.playCombatPhrase?.("shiftEnd", { source: data?.source });
+        showBattleCallout("SHIFT FADE", data?.residueCount ? `RESIDUE ${data.residueCount}` : "LAYER OFFLINE", "", "");
+      }
+      break;
+
+    case "resonance":
+      if (data?.owner === "player") {
+        sessionDiagnostics.resonanceTriggers += 1;
+        audio.playCombatPhrase?.("resonance", { type: data?.type });
+        showBattleCallout(data?.label || "RESONANCE", data?.subtitle || "LAYER SYNC", data?.tone || "gold", "fever");
+      }
+      break;
+
+    case "layerCounter":
+      if (data?.owner === "player") {
+        sessionDiagnostics.layerCounters += 1;
+        impact.counter?.(data?.type);
+        audio.playCombatPhrase?.("counter", { type: data?.type });
+        if (data?.type === "guard") {
+          audio.playShieldBlockSound?.();
+        }
+        showBattleCallout(data?.label || "COUNTER", data?.subtitle || "LAYER RESPONSE", data?.tone || "gold", "fever");
       }
       break;
 

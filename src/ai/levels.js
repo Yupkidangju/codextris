@@ -1,9 +1,10 @@
 ﻿/*
- * [v3.9.0] AI 난이도 설정
+ * [v3.13.0] AI 난이도 설정
  * 
  * 작성일: 2026-02-28
  * 변경사항: 캐릭터 보이스 시스템 추가 (Feature 9)
  *   - [v3.9.0] Rule-Break Boss 전용 규칙 공격 패턴 확장
+ *   - [v3.13.0] 보스 패턴 사용 확률 재조정
  */
 
 /**
@@ -60,7 +61,7 @@ export const AI_LEVELS = {
   "병아리": {
     reactionMs: 800,      // 반응 시간 (ms)
     mistake: 0.30,        // 실수 확률 (0-1)
-    attackChance: 0.1,    // 공격 패턴 사용 확률
+    attackChance: 0.08,    // 공격 패턴 사용 확률
     specialPatterns: ["GarbagePush"],  // 사용 가능한 패턴
     bossMode: false,      // 분노 모드 여부
     bossModeThreshold: 0, // 분노 모드 진입 체계 (%)
@@ -70,7 +71,7 @@ export const AI_LEVELS = {
   "하수인": {
     reactionMs: 600,
     mistake: 0.20,
-    attackChance: 0.2,
+    attackChance: 0.16,
     specialPatterns: ["GarbagePush", "CorruptNext"],
     bossMode: false,
     bossModeThreshold: 0,
@@ -80,7 +81,7 @@ export const AI_LEVELS = {
   "기사": {
     reactionMs: 450,
     mistake: 0.12,
-    attackChance: 0.3,
+    attackChance: 0.26,
     specialPatterns: ["GarbagePush", "CorruptNext", "GravityJolt"],
     bossMode: false,
     bossModeThreshold: 0,
@@ -90,7 +91,7 @@ export const AI_LEVELS = {
   "마왕군주": {
     reactionMs: 300,
     mistake: 0.06,
-    attackChance: 0.5,
+    attackChance: 0.38,
     specialPatterns: ["GarbagePush", "CorruptNext", "GravityJolt", "StackShake", "Darkness", "HoldLock", "GhostOut"],
     bossMode: true,
     bossModeThreshold: 30,  // HP 30% 이하에서 분노 모드
@@ -100,7 +101,7 @@ export const AI_LEVELS = {
   "데몬킹": {
     reactionMs: 180,
     mistake: 0.02,
-    attackChance: 0.7,
+    attackChance: 0.52,
     specialPatterns: ["GarbagePush", "CorruptNext", "GravityJolt", "StackShake", "Darkness", "MirrorMove", "RotationTax", "GaugeLeech", "NextScramble"],
     bossMode: true,
     bossModeThreshold: 50,  // HP 50% 이하에서 분노 모드
@@ -118,7 +119,7 @@ export function getBossModeConfig(baseConfig) {
   return {
     ...baseConfig,
     reactionMs: Math.max(100, baseConfig.reactionMs * 0.6),  // 속도 1.6배
-    attackChance: Math.min(0.9, baseConfig.attackChance * 1.5),  // 공격 확률 증가
+    attackChance: Math.min(0.82, baseConfig.attackChance * 1.45),  // 공격 확률 증가
     mistake: Math.max(0.01, baseConfig.mistake * 0.5),  // 실수 확률 감소
     isBossMode: true
   };

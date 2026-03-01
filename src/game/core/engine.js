@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.12.0] 메인 게임 엔진
+ * [v3.14.0] 메인 게임 엔진
  * 
  * 작성일: 2026-02-28
  * 변경사항: 
@@ -15,6 +15,8 @@
  *   - [v3.9.0] Rule-Break Boss 규칙 공격 적용
  *   - [v3.10.0] 패턴 공격 문법 및 라인 형태 분석 분기 추가
  *   - [v3.12.0] Neon Shift/Residue 오버레이와 Shift 보너스 압박 추가
+ *   - [v3.13.0] Layer Resonance, 밸런스 패스, HUD 친화 메타 추가
+ *   - [v3.14.0] 레이어 카운터 매트릭스, Shift 종료 이벤트, 최종 게임필 메타 추가
  */
 
 import { Board } from "./board.js";
@@ -271,6 +273,7 @@ function tryFeverForgeKick(state, board, nextRot) {
 }
 
 function syncFeverMutationState(state) {
+  const now = performance.now();
   if (state.id !== "player") {
     state.feverType = FEVER_TYPES.FORGE;
     state.feverGuardCharges = 0;
@@ -284,13 +287,16 @@ function syncFeverMutationState(state) {
     state.feverType = FEVER_TYPES.FORGE;
     state.feverGuardCharges = 0;
     state.nextPreviewCount = 3;
-    state.itemSpawnMultiplier = 1;
+    state.itemSpawnMultiplier = (state.neonItemBoostUntil || 0) > now ? 3.1 : 1;
     return;
   }
 
   state.feverType = fever.type;
   state.nextPreviewCount = fever.type === FEVER_TYPES.SCAN ? 5 : 3;
-  state.itemSpawnMultiplier = fever.type === FEVER_TYPES.SURGE ? 2.4 : 1;
+  state.itemSpawnMultiplier = Math.max(
+    fever.type === FEVER_TYPES.SURGE ? 2.4 : 1,
+    (state.neonItemBoostUntil || 0) > now ? 3.1 : 1
+  );
   if (fever.type === FEVER_TYPES.GUARD) {
     if (state.feverGuardCharges <= 0) {
       state.feverGuardCharges = 1;
@@ -354,6 +360,7 @@ function applyNeonShiftBonus(who, cleared, tSpinType, isPerfectClear, patternInf
     bonusGarbage += 1;
   }
 
+  bonusGarbage = Math.min(3, bonusGarbage);
   if (bonusGarbage <= 0) return;
 
   queue.sendAttack(state.id, who.opponent.state.id, {
@@ -367,6 +374,163 @@ function applyNeonShiftBonus(who, cleared, tSpinType, isPerfectClear, patternInf
     amount: bonusGarbage,
     patternTag: "neonShift",
   });
+}
+
+function applyLayerResonance(who, cleared, tSpinType, patternInfo, nowMs, queue, getRng, onEvent) {
+  const { state } = who;
+  if (state.id !== "player" || !isNeonShiftActive(state, nowMs)) return;
+  if ((state.neonResonanceUntil || 0) > nowMs) return;
+
+  let resonance = null;
+  let attack = null;
+
+  if (state.feverType === FEVER_TYPES.FORGE && tSpinType) {
+    resonance = { type: "forge", label: "FORGE SPARK", subtitle: "T-SPIN PRESSURE", tone: "gold" };
+    attack = { type: "WavePush", strength: 1, seed: getRng() };
+  } else if (state.feverType === FEVER_TYPES.GUARD && cleared >= 2 && !who.itemSystem?.isShieldActive?.()) {
+    who.itemSystem?.activateShield?.();
+    resonance = { type: "guard", label: "GUARD AEGIS", subtitle: "AUTO SHIELD", tone: "gold" };
+  } else if (state.feverType === FEVER_TYPES.SCAN && patternInfo?.tag) {
+    resonance = { type: "scan", label: "SCAN HEX", subtitle: "NEXT JAM", tone: "warn" };
+    attack = { type: "NextScramble", strength: 1, seed: getRng() };
+  } else if (state.feverType === FEVER_TYPES.SURGE && cleared >= 2) {
+    resonance = { type: "surge", label: "SURGE PULSE", subtitle: "WAVE PUSH", tone: "gold" };
+    attack = { type: "WavePush", strength: 1, seed: getRng() };
+  }
+
+  if (!resonance) return;
+
+  state.neonResonanceUntil = nowMs + 1800;
+
+  if (attack) {
+    queue.sendAttack(state.id, who.opponent.state.id, attack, nowMs);
+    onEvent("attack", {
+      from: state.id,
+      type: attack.type,
+      amount: attack.strength,
+      patternTag: "resonance",
+    });
+  }
+
+  onEvent("resonance", {
+    owner: state.id,
+    ...resonance,
+  });
+}
+
+function consumeNeonResidue(state, nowMs) {
+  const residues = pruneNeonResidue(state, nowMs);
+  if (!residues.length) return false;
+  residues.sort((a, b) => (a.until || 0) - (b.until || 0));
+  residues.shift();
+  return true;
+}
+
+function emitLayerCounter(state, nowMs, onEvent, payload) {
+  state.neonCounterCooldownUntil = nowMs + (payload.cooldownMs || 1800);
+  state.layerCounterUntil = nowMs + 1800;
+  state.layerCounterLabel = payload.label || "COUNTER";
+  onEvent("layerCounter", {
+    owner: state.id,
+    type: payload.type,
+    label: payload.label,
+    subtitle: payload.subtitle,
+    tone: payload.tone || "gold",
+    residueCount: pruneNeonResidue(state, nowMs).length,
+  });
+}
+
+function applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng) {
+  const { state } = targetWho;
+  if (state.id !== "player" || !isNeonShiftActive(state, nowMs)) {
+    return { attack, cancelled: false, counterType: "" };
+  }
+  if ((state.neonCounterCooldownUntil || 0) > nowMs) {
+    return { attack, cancelled: false, counterType: "" };
+  }
+  if (!pruneNeonResidue(state, nowMs).length) {
+    return { attack, cancelled: false, counterType: "" };
+  }
+
+  const type = attack.type;
+  const isGarbagePressure = ["GarbagePush", "PierceBarrage", "NullBurst"].includes(type);
+  const isPulsePressure = ["WavePush"].includes(type);
+  const isSpecial = type !== "GarbagePush";
+
+  if (state.feverType === FEVER_TYPES.FORGE && isGarbagePressure && (attack.strength || 0) > 0) {
+    if (!consumeNeonResidue(state, nowMs)) return { attack, cancelled: false, counterType: "" };
+    const shavedAttack = { ...attack, strength: Math.max(0, (attack.strength || 0) - 1) };
+    emitLayerCounter(state, nowMs, onEvent, {
+      type: "forge",
+      label: "FORGE BREAK",
+      subtitle: shavedAttack.strength > 0 ? "PRESSURE SHAVED" : "PRESSURE CUT",
+      tone: "gold",
+      cooldownMs: 1650,
+    });
+    return { attack: shavedAttack, cancelled: shavedAttack.strength <= 0, counterType: "forge" };
+  }
+
+  if (state.feverType === FEVER_TYPES.GUARD && isSpecial) {
+    if (!consumeNeonResidue(state, nowMs)) return { attack, cancelled: false, counterType: "" };
+    emitLayerCounter(state, nowMs, onEvent, {
+      type: "guard",
+      label: "GUARD LATTICE",
+      subtitle: "SPECIAL NULL",
+      tone: "gold",
+      cooldownMs: 2200,
+    });
+    return { attack, cancelled: true, counterType: "guard" };
+  }
+
+  if (state.feverType === FEVER_TYPES.SCAN && isSpecial) {
+    if (!consumeNeonResidue(state, nowMs)) return { attack, cancelled: false, counterType: "" };
+    queue.sendAttack(state.id, targetWho.opponent.state.id, {
+      type: "NextScramble",
+      strength: 1,
+      seed: getRng(),
+    }, nowMs);
+    onEvent("attack", {
+      from: state.id,
+      type: "NextScramble",
+      amount: 1,
+      patternTag: "counter",
+    });
+    emitLayerCounter(state, nowMs, onEvent, {
+      type: "scan",
+      label: "SCAN TRACE",
+      subtitle: "TRACE JAM",
+      tone: "warn",
+      cooldownMs: 1900,
+    });
+    return { attack, cancelled: false, counterType: "scan" };
+  }
+
+  if (state.feverType === FEVER_TYPES.SURGE && (isGarbagePressure || isPulsePressure) && (attack.strength || 0) > 0) {
+    if (!consumeNeonResidue(state, nowMs)) return { attack, cancelled: false, counterType: "" };
+    state.neonItemBoostUntil = Math.max(state.neonItemBoostUntil || 0, nowMs + 3200);
+    queue.sendAttack(state.id, targetWho.opponent.state.id, {
+      type: "WavePush",
+      strength: 1,
+      seed: getRng(),
+    }, nowMs);
+    onEvent("attack", {
+      from: state.id,
+      type: "WavePush",
+      amount: 1,
+      patternTag: "counter",
+    });
+    const echoedAttack = { ...attack, strength: Math.max(0, (attack.strength || 0) - 1) };
+    emitLayerCounter(state, nowMs, onEvent, {
+      type: "surge",
+      label: "SURGE ECHO",
+      subtitle: "PULSE RETURN",
+      tone: "gold",
+      cooldownMs: 1750,
+    });
+    return { attack: echoedAttack, cancelled: echoedAttack.strength <= 0, counterType: "surge" };
+  }
+
+  return { attack, cancelled: false, counterType: "" };
 }
 
 function drawNeonOverlay(ctx, state, cell, canvas, now) {
@@ -409,6 +573,11 @@ function drawNeonOverlay(ctx, state, cell, canvas, now) {
     glow.addColorStop(1, `rgba(255, 77, 158, ${0.05 + remainRatio * 0.12})`);
     ctx.fillStyle = glow;
     ctx.fillRect(0, rowY, canvas.width, cell);
+    if (!lowPower) {
+      ctx.strokeStyle = `rgba(255,255,255,${0.08 + remainRatio * 0.12})`;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(0.5, rowY + 0.5, canvas.width - 1, cell - 1);
+    }
   });
 
   ctx.restore();
@@ -962,6 +1131,7 @@ function lockPiece(who, bag, nowMs, queue, getRng, onEvent, shakeScreen, resolve
 
     applyPatternOutcome(who, patternInfo, garbage > 0 ? garbage : cleared, nowMs, queue, getRng, onEvent);
     applyNeonShiftBonus(who, cleared, tSpinType, isPerfectClear, patternInfo, clearedLines, nowMs, queue, getRng, onEvent);
+    applyLayerResonance(who, cleared, tSpinType, patternInfo, nowMs, queue, getRng, onEvent);
 
     if (state.id === "ai" && resolveAiSpecialAttack) {
       const specialAttack = resolveAiSpecialAttack(state, cleared, garbage);
@@ -1153,6 +1323,7 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
   const { state, board } = targetWho;
   const targetSkillManager = state.id === "player" ? getPlayerSkillManager() : getAiSkillManager();
   let deliveredAmount = attack.strength || 0;
+  let counterType = "";
   
   switch (attack.type) {
     case "GarbagePush":
@@ -1182,6 +1353,17 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
         break;
       }
 
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        counterType = counter.counterType || counterType;
+        attack = counter.attack;
+        deliveredAmount = attack.strength || 0;
+        if (counter.cancelled || deliveredAmount <= 0) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
+
       // [v2.0.2-fix] holeX를 -1로 설정하여 랜덤 구멍 생성
       board.pushGarbage(Math.max(1, attack.strength), -1);
       if (state.id === "ai" && state.bossModeEnabled) {
@@ -1190,6 +1372,14 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
       break;
       
     case "CorruptNext":
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        counterType = counter.counterType || counterType;
+        if (counter.cancelled) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
       const badPieces = ["S", "Z", "L", "J"];
       const count = Math.min(3, Math.max(1, attack.strength));
       const seedIndex = Math.floor((attack.seed || 0) * badPieces.length);
@@ -1200,6 +1390,14 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
       break;
       
     case "GravityJolt":
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        counterType = counter.counterType || counterType;
+        if (counter.cancelled) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
       if (!board.collides(state.piece, state.rot, state.x, state.y + 1)) {
         state.y += 1;
       }
@@ -1207,48 +1405,124 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
       break;
       
     case "StackShake":
-      state.inputDelayUntil = nowMs + 500;
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        counterType = counter.counterType || counterType;
+        if (counter.cancelled) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
+      state.inputDelayUntil = nowMs + 420;
       const el = document.getElementById(state.id === "player" ? "playerCanvas" : "aiCanvas");
       if (el) shakeElement(el);
       break;
       
     case "Darkness":
-      state.darknessUntil = nowMs + 3000;
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        counterType = counter.counterType || counterType;
+        if (counter.cancelled) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
+      state.darknessUntil = nowMs + 2600;
       break;
       
     case "MirrorMove":
-      state.mirrorMoveUntil = nowMs + 5000;
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        counterType = counter.counterType || counterType;
+        if (counter.cancelled) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
+      state.mirrorMoveUntil = nowMs + 4200;
       break;
 
     case "HoldLock":
-      state.holdLockUntil = nowMs + 4000;
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        counterType = counter.counterType || counterType;
+        if (counter.cancelled) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
+      state.holdLockUntil = nowMs + 3200;
       break;
 
     case "GhostOut":
-      state.ghostHiddenUntil = nowMs + 5000;
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        counterType = counter.counterType || counterType;
+        if (counter.cancelled) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
+      state.ghostHiddenUntil = nowMs + 4200;
       break;
 
     case "RotationTax":
-      state.rotationTaxUntil = nowMs + 6000;
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        if (counter.cancelled) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
+      state.rotationTaxUntil = nowMs + 4600;
       deliveredAmount = 12;
       break;
 
     case "GaugeLeech":
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        if (counter.cancelled) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
       deliveredAmount = drainStateGauge(state, 35);
-      state.gaugeLeechUntil = nowMs + 3000;
+      state.gaugeLeechUntil = nowMs + 2400;
       break;
 
     case "NextScramble":
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        if (counter.cancelled) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
       shuffleNextQueue(state, attack.seed || Math.random(), 3);
-      state.nextScrambleUntil = nowMs + 5000;
+      state.nextScrambleUntil = nowMs + 3600;
       break;
 
     case "PierceBarrage":
-      deliveredAmount = Math.max(2, attack.strength || 2);
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        counterType = counter.counterType || counterType;
+        attack = counter.attack;
+        deliveredAmount = Math.max(0, attack.strength || 0);
+        if (counter.cancelled || deliveredAmount <= 0) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
       board.pushGarbage(deliveredAmount, (attack.seed || 0) < 0.5 ? 4 : 5);
       break;
 
     case "DrillHex": {
+      const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+      counterType = counter.counterType || counterType;
+      if (counter.cancelled) {
+        deliveredAmount = 0;
+        break;
+      }
       const badPieces = ["S", "Z", "L", "J"];
       const seedIndex = Math.floor((attack.seed || 0) * badPieces.length);
       state.corruptNextUntil = nowMs + 4000;
@@ -1260,16 +1534,34 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
     }
 
     case "WavePush":
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        counterType = counter.counterType || counterType;
+        attack = counter.attack;
+        deliveredAmount = Math.max(0, attack.strength || 0);
+        if (counter.cancelled || deliveredAmount <= 0) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
       if (!board.collides(state.piece, state.rot, state.x, state.y + 1)) {
         state.y += 1;
       }
       state.gravityJoltUntil = nowMs + 1200;
       state.inputDelayUntil = Math.max(state.inputDelayUntil, nowMs + 280);
-      deliveredAmount = Math.max(1, attack.strength || 1);
       break;
 
     case "NullBurst":
-      deliveredAmount = Math.max(2, attack.strength || 2);
+      {
+        const counter = applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng);
+        counterType = counter.counterType || counterType;
+        attack = counter.attack;
+        deliveredAmount = Math.max(0, attack.strength || 0);
+        if (counter.cancelled || deliveredAmount <= 0) {
+          deliveredAmount = 0;
+          break;
+        }
+      }
       board.pushGarbage(deliveredAmount, -1);
       drainStateGauge(state, 25);
       state.gaugeLeechUntil = nowMs + 2500;
@@ -1280,7 +1572,7 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
     state.bossModeActive = state.bossHp <= state.bossModeThreshold;
   }
   
-  onEvent("attacked", { target: state.id, type: attack.type, amount: deliveredAmount });
+  onEvent("attacked", { target: state.id, type: attack.type, amount: deliveredAmount, countered: deliveredAmount <= 0 && !!counterType, counterType });
 }
 
 /**
@@ -1468,6 +1760,17 @@ export function createGame(config) {
       who.state.specialReady = skillManager.isGaugeFull();
     }
     syncFeverMutationState(who.state);
+    const shiftActiveNow = isNeonShiftActive(who.state, nowMs);
+    if (who.state.id === "player" && who.state.neonShiftWasActive && !shiftActiveNow) {
+      who.state.layerCounterUntil = 0;
+      who.state.layerCounterLabel = "";
+      config.onEvent("neonShiftEnd", {
+        owner: who.state.id,
+        source: who.state.neonShiftSource || "shift",
+        residueCount: pruneNeonResidue(who.state, nowMs).length,
+      });
+    }
+    who.state.neonShiftWasActive = shiftActiveNow;
     who.state.stackHeight = who.board.getStackHeight();
     who.state.isFeverModeActive = who.state.id === "player" ? isFeverModeActive() : false;
   }

@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.8.0] 이펙트 렌더링 엔진
+ * [v3.14.0] 이펙트 렌더링 엔진
  * 
  * 작성일: 2026-02-28
  * 변경사항: 
@@ -9,6 +9,7 @@
  *   - 라인 클리어 셀 분해/플래시 연출 추가
  *   - 전투 초반 프리즈 완화를 위한 이펙트 상한 및 밀도 조정
  *   - ScreenImpact 히트스톱/보스/KO 프리셋 추가
+ *   - [v3.14.0] 레이어 카운터/Shift 종료 프리셋 추가
  */
 
 /**
@@ -482,6 +483,17 @@ export class ScreenImpact {
   bossPhase(phase = 1) {
     this.pulse(1 + Math.max(0, Number(phase) || 1) * 0.32);
     this.hitstop(phase >= 3 ? 90 : 65);
+  }
+
+  counter(type = "guard") {
+    const intensity = type === "guard" ? 1.45 : type === "forge" ? 1.15 : 1.0;
+    this.pulse(intensity);
+    this.hitstop(type === "guard" ? 55 : 38);
+  }
+
+  shiftFade() {
+    this.pulse(0.72);
+    this.hitstop(22);
   }
 
   hitstop(ms = 0) {

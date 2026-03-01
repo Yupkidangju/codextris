@@ -7,7 +7,7 @@
 ### 소개
 좌측 플레이어 vs 우측 AI 대전 테트리스 게임입니다. 현대적인 네온 UI와 화려한 시각 효과, 풍부한 게임성을 갖춘 프로덕션급 웹 게임입니다.
 
-### 주요 기능 (v3.12.0)
+### 주요 기능 (v3.14.0)
 - 🎮 **3가지 필살기 스킬**: 블라인드(1), 블록 스왑(2), 가비지 반사(3)
 - 🔥 **피버 모드**: 10콤보+ 시 BGM 1.3배속 + 공격력 1.5배
 - 💣 **아이템 시스템**: 폭탄(3x3 파괴), 별(1줄 클리어), 실드(가비지 차단)
@@ -30,6 +30,10 @@
 - 🔥 **Fever Mutation**: 피버가 `FORGE / GUARD / SCAN / SURGE` 타입으로 분기되어 벽킥, 방어, `NEXT 5`, 아이템 확률을 바꿈
 - 🌐 **Dual Layer Board**: `Neon Shift`와 `Neon Residue`가 보드 위에 겹쳐져, 피버/특수 클리어/보스 페이즈에서 네온 전장 문맥을 만든다
 - 🎹 **Combat Orchestration**: 패턴 공격, 규칙 공격, 스킬 합성, 피버 타입, `Neon Shift`가 현재 곡 위에 짧은 전투 프레이즈를 덧씌운다
+- ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE`가 `Neon Shift`와 결합해 추가 파동, 실드, 넥스트 교란, 파형 압박으로 이어진다
+- 🧭 **HUD Polish**: 상태 칩 우선순위 정렬, `RESIDUE xN`, `+N MORE` 축약으로 전투 가독성을 높였다
+- 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo`가 잔상 행을 소모해 공격을 절삭, 무효화, 역교란, 역압박한다
+- 🧪 **Final DEV Polish**: DEV PANEL에 `shift / residue / resonance / counter` 메타와 세션 카운터를 추가해 장시간 튜닝이 쉬워졌다
 
 ### 조작법
 | 동작 | 키 |
@@ -66,7 +70,7 @@
 ### Introduction
 Player (left) vs AI (right) battle Tetris game. A production-grade web game with modern neon UI, dazzling visual effects, and rich gameplay.
 
-### Key Features (v3.12.0)
+### Key Features (v3.14.0)
 - 🎮 **3 Special Skills**: Blind (1), Block Swap (2), Garbage Reflect (3)
 - 🔥 **Fever Mode**: 10+ combo triggers 1.3x BGM speed + 1.5x attack power
 - 💣 **Item System**: Bomb (3x3 destroy), Star (1 line clear), Shield (block garbage)
@@ -89,6 +93,10 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 - 🔥 **Fever Mutation**: Fever now branches into `FORGE / GUARD / SCAN / SURGE` variants that alter kicks, defense, `NEXT 5`, and item odds
 - 🌐 **Dual Layer Board**: `Neon Shift` and `Neon Residue` overlay the board to create a layered battlefield during fever, special clears, and boss phase spikes
 - 🎹 **Combat Orchestration**: Pattern attacks, rule-breaks, skill fusions, fever variants, and `Neon Shift` add short combat phrases on top of the current track
+- ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE` now resonate with `Neon Shift` to trigger extra wave pressure, shields, next scrambling, or pulse attacks
+- 🧭 **HUD Polish**: Status chips are priority-sorted, show `RESIDUE xN`, and collapse overflow into `+N MORE` for cleaner combat readability
+- 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo` consume residue rows to shave, nullify, scramble back, or echo pressure
+- 🧪 **Final DEV Polish**: The dev panel now exposes `shift / residue / resonance / counter` metadata and longer-session tuning counters
 
 ### Controls
 | Action | Key |
@@ -125,7 +133,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 概要
 左側プレイヤー対右側AIの対戦テトリスゲームです。モダンなネオンUIと華麗なビジュアルエフェクト、豊かなゲーム性を持つプロダクション級ウェブゲームです。
 
-### 主な機能 (v3.12.0)
+### 主な機能 (v3.14.0)
 - 🎮 **3つの必殺技スキル**: ブラインド(1)、ブロック交換(2)、ガーベジ反射(3)
 - 🔥 **フィーバーモード**: 10コンボ以上でBGM 1.3倍速 + 攻撃力1.5倍
 - 💣 **アイテムシステム**: 爆弾(3x3破壊)、スター(1ライン消去)、シールド(ガーベジブロック)
@@ -148,6 +156,10 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 - 🔥 **Fever Mutation**: フィーバーが `FORGE / GUARD / SCAN / SURGE` に分岐し、壁蹴り、防御、`NEXT 5`、アイテム率を変化
 - 🌐 **Dual Layer Board**: `Neon Shift` と `Neon Residue` が盤面に重なり、フィーバーや特殊消去、ボス段階で多層戦場を作る
 - 🎹 **Combat Orchestration**: パターン攻撃、ルール破壊、スキル合成、フィーバー種別、`Neon Shift` が現在の曲に短い戦闘フレーズを重ねる
+- ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE` が `Neon Shift` と共鳴し、追加波動、即時シールド、NEXT攪乱、パルス攻撃へ発展
+- 🧭 **HUD Polish**: 状態チップを優先度順に並べ、`RESIDUE xN` と `+N MORE` で戦闘情報を圧縮表示
+- 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo` が残像行を消費して圧力を削り、無効化し、逆攪乱し、反撃する
+- 🧪 **Final DEV Polish**: DEV PANEL に `shift / residue / resonance / counter` メタと長時間調整用カウンタを追加
 
 ### 操作方法
 | 操作 | キー |
@@ -184,7 +196,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 介紹
 左側玩家對戰右側AI的俄羅斯方塊遊戲。具有現代霓虹UI、華麗視覺效果和豐富遊戲性的專業級網頁遊戲。
 
-### 主要功能 (v3.12.0)
+### 主要功能 (v3.14.0)
 - 🎮 **3種必殺技**: 失明(1)、方塊交換(2)、垃圾反射(3)
 - 🔥 **狂熱模式**: 10連擊以上BGM 1.3倍速 + 攻擊力1.5倍
 - 💣 **道具系統**: 炸彈(3x3破壞)、星星(消除1行)、盾牌(阻擋垃圾行)
@@ -207,6 +219,10 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 - 🔥 **Fever Mutation**: Fever 會分成 `FORGE / GUARD / SCAN / SURGE`，改變壁踢、防禦、`NEXT 5` 與道具機率
 - 🌐 **Dual Layer Board**: `Neon Shift` 與 `Neon Residue` 疊加在棋盤上，於 Fever、特殊消除與 Boss 階段形成多層戰場
 - 🎹 **Combat Orchestration**: 模式攻擊、規則破壞、技能合成、Fever 類型與 `Neon Shift` 會在現有樂曲上疊加短促戰鬥樂句
+- ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE` 會與 `Neon Shift` 共鳴，衍生成額外波動、即時護盾、NEXT 擾亂與脈衝攻擊
+- 🧭 **HUD Polish**: 狀態晶片依優先度排序，並用 `RESIDUE xN` 與 `+N MORE` 壓縮戰鬥資訊
+- 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo` 會消耗殘像列來削減、無效化、反向擾亂與回推壓力
+- 🧪 **Final DEV Polish**: DEV PANEL 新增 `shift / residue / resonance / counter` 中繼資料與長局調校計數
 
 ### 操作方式
 | 動作 | 按鍵 |
@@ -243,7 +259,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 介绍
 左侧玩家对战右侧AI的俄罗斯方块游戏。具有现代霓虹UI、华丽视觉效果和丰富游戏性的专业级网页游戏。
 
-### 主要功能 (v3.12.0)
+### 主要功能 (v3.14.0)
 - 🎮 **3种必杀技**: 致盲(1)、方块交换(2)、垃圾反射(3)
 - 🔥 **狂热模式**: 10连击以上BGM 1.3倍速 + 攻击力1.5倍
 - 💣 **道具系统**: 炸弹(3x3破坏)、星星(消除1行)、盾牌(阻挡垃圾行)
@@ -266,6 +282,10 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 - 🔥 **Fever Mutation**: Fever 会分成 `FORGE / GUARD / SCAN / SURGE`，改变壁踢、防御、`NEXT 5` 与道具概率
 - 🌐 **Dual Layer Board**: `Neon Shift` 与 `Neon Residue` 叠加在棋盘上，在 Fever、特殊消除与 Boss 阶段形成多层战场
 - 🎹 **Combat Orchestration**: 模式攻击、规则破坏、技能合成、Fever 类型与 `Neon Shift` 会在当前曲目上叠加短促战斗乐句
+- ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE` 会与 `Neon Shift` 共鸣，衍生额外波动压制、即时护盾、NEXT 扰乱与脉冲攻击
+- 🧭 **HUD Polish**: 状态芯片按优先级排序，并用 `RESIDUE xN` 与 `+N MORE` 压缩战斗信息
+- 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo` 会消耗残像行来削减、无效化、反向扰乱与回推压制
+- 🧪 **Final DEV Polish**: DEV PANEL 新增 `shift / residue / resonance / counter` 元数据与长局调校计数
 
 ### 操作方式
 | 动作 | 按键 |
@@ -310,5 +330,5 @@ MIT License
 
 ---
 
-**Version:** 3.12.0  
+**Version:** 3.14.0  
 **Last Updated:** 2026-03-02

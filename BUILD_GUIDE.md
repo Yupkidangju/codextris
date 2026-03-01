@@ -29,6 +29,12 @@
 21. 피버 진입, `T-Spin Double+`, `Perfect Clear`, 보스 페이즈 상승 시 `Neon Shift` 콜아웃과 `STATUS`의 `SHIFT` 타이머가 노출되는지 확인
 22. `Neon Shift` 중 2줄 이상 또는 `T-Spin` 클리어 시 보드에 `Neon Residue` 행 잔상이 남고 추가 압박이 생성되는지 확인
 23. 패턴 공격, 스킬 합성, 보스 규칙 공격, 피버 타입 진입, `Neon Shift` 진입 시 BGM이 끊기지 않으면서 짧은 오디오 프레이즈가 덧붙는지 확인
+24. Shift 중 `FORGE / GUARD / SCAN / SURGE` 타입별 공명(`Forge Spark / Guard Aegis / Scan Hex / Surge Pulse`)이 기대한 조건에서만 발동하는지 확인
+25. `STATUS`가 우선순위 높은 상태부터 정렬되고, 많은 상태가 겹칠 때 `+N MORE` 칩으로 축약되는지 확인
+26. 5/10/15 콤보, 보스 페이즈 상승, 레이어 공명에서 전투 프레이즈가 과도하게 겹치지 않고 구분되는지 확인
+27. `Forge Break / Guard Lattice / Scan Trace / Surge Echo`가 올바른 공격만 카운터하고 `Neon Residue` 1개를 소모하는지 확인
+28. `Neon Shift` 종료 시 `SHIFT FADE` 콜아웃과 약한 임팩트가 한 번만 발생하는지 확인
+29. DEV PANEL에서 `shift / residue / counter / resonance` 메타와 세션 카운터가 갱신되는지 확인
 
 ## 주의
 - `file://` 로 직접 열면 WASM fetch가 차단될 수 있음

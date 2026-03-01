@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.10.0] 배틀 공격 시스템
+ * [v3.13.0] 배틀 공격 시스템
  *
  * 작성일: 2026-02-28
  * 변경사항:
@@ -7,6 +7,7 @@
  *   - [v6.0.0] 피버 모드 공격 배수 기능 추가
  *   - [v3.9.0] Rule-Break Boss 규칙 공격 타입 추가
  *   - [v3.10.0] 패턴 공격 태그 변환 및 신규 공격 타입 추가
+ *   - [v3.13.0] 패턴 공격 강도 재조정
  */
 
 import { garbageForLines } from "../core/constants.js";
@@ -15,7 +16,7 @@ const PATTERN_ATTACK_CONFIG = {
   pierceBarrage: {
     type: "PierceBarrage",
     strength(baseStrength) {
-      return Math.max(2, baseStrength + 1);
+      return Math.max(2, baseStrength);
     },
   },
   drillHex: {
@@ -33,7 +34,7 @@ const PATTERN_ATTACK_CONFIG = {
   nullBurst: {
     type: "NullBurst",
     strength(baseStrength) {
-      return Math.max(2, baseStrength + 1);
+      return Math.max(2, baseStrength);
     },
   },
 };

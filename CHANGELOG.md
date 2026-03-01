@@ -6,6 +6,38 @@
 
 ---
 
+## [3.14.0] - 2026-03-02
+
+### 추가됨 (Added)
+- Layer Counter Matrix
+  - `Forge Break / Guard Lattice / Scan Trace / Surge Echo` 카운터 규칙 추가
+  - `Neon Residue`를 소모해 공격 절삭, 무효화, 역교란, 역압박을 만드는 레이어 반격 흐름 추가
+- Final DEV / Game Feel Polish
+  - `Neon Shift` 종료 이벤트, 레이어 카운터 콜아웃, DEV `shift / residue / resonance / counter` 메타 추가
+
+### 변경됨 (Changed)
+- 레이어 심화
+  - `SURGE` 타입은 Shift 카운터 성공 시 짧은 아이템 출현 배수 상승을 얻도록 확장
+- DEV PANEL
+  - 게임 메타에 `shift`, `residue`, `counter` 상태를 함께 표시하도록 정리
+
+## [3.13.0] - 2026-03-02
+
+### 추가됨 (Added)
+- Layer Resonance
+  - `Forge Spark / Guard Aegis / Scan Hex / Surge Pulse` 공명 규칙 추가
+  - `Neon Shift`와 피버 타입을 연결하는 전투 보너스와 공명 프레이즈 추가
+- Combat Orchestration 2.0
+  - `comboTier`, `bossSignature`, `resonance` 프레이즈 추가
+  - 동일 계열 프레이즈 중첩을 줄이는 내부 쿨다운 추가
+
+### 변경됨 (Changed)
+- Balance Pass
+  - 보스 패턴 사용 확률, 규칙 공격 지속시간, 패턴 공격 강도, `Neon Shift` 보너스 상한 재조정
+- HUD Polish
+  - `STATUS` 정렬 우선순위와 `+N MORE`, `RESIDUE xN` 메타 칩 추가
+  - `Neon Shift`와 공명 상태를 더 읽기 쉬운 정보 구조로 재배열
+
 ## [3.12.0] - 2026-03-02
 
 ### 추가됨 (Added)
