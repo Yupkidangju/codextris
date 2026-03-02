@@ -1,9 +1,9 @@
 ﻿/*
  * Dual Tetris Battle: Neon Wars - Main Stylesheet
- * [v3.13.0] 입력 정밀 설정, QA 패널, 게임필, 피버 변형, 네온 레이어 UI 대응
+ * [v3.15.1] 입력 정밀 설정, QA 패널, 게임필, 피버 변형, 네온 레이어 UI 대응
  * 
  * 작성일: 2026-03-02
- * 변경사항: 3컬럼 구조 (Player/Center/AI), 모바일 상단 상태바, 1080p 타이틀 적합화, 스크롤바 거터 제거, 상태 HUD 메타 칩 추가
+ * 변경사항: 3컬럼 구조 (Player/Center/AI), 모바일 상단 상태바, 1080p 타이틀 적합화, 스크롤바 거터 제거, 상태 HUD 메타 칩 추가, 모바일 보드 축소/버튼 확대
  */
 
 /* ===== CSS VARIABLES ===== */
@@ -24,6 +24,7 @@
   --neon-gold: #ffd700;
   --neon-danger: #ff2d55;
   --mobile-btn-size: 55px;
+  --mobile-controls-height: 164px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -947,6 +948,12 @@ body.neon-shift-active .recent-battle-card {
   background: rgba(255, 255, 255, 0.02);
 }
 
+.incoming-chip.meta {
+  border-style: dashed;
+  border-color: rgba(160, 196, 232, 0.28);
+  background: rgba(255, 255, 255, 0.02);
+}
+
 .status-name,
 .incoming-name {
   font-size: 0.72rem;
@@ -1579,7 +1586,8 @@ body.neon-shift-active .recent-battle-card {
     grid-template-rows: 1fr;
     grid-template-areas: "player ai";
     gap: 10px;
-    padding: 10px calc(10px + var(--safe-right)) calc(100px + var(--safe-bottom)) calc(10px + var(--safe-left));
+    padding: 8px calc(8px + var(--safe-right)) calc(max(var(--mobile-controls-height), calc(var(--mobile-btn-size) * 2 + 44px)) + 14px + var(--safe-bottom)) calc(8px + var(--safe-left));
+    align-items: start;
   }
 
   /* 센터 패널 숨김 (모바일에서는 상태바 사용) */
@@ -1594,6 +1602,8 @@ body.neon-shift-active .recent-battle-card {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-width: 0;
+    min-height: 0;
   }
 
   .lane.ai-lane {
@@ -1602,6 +1612,8 @@ body.neon-shift-active .recent-battle-card {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-width: 0;
+    min-height: 0;
   }
 
   /* 레인 타이틀 */
@@ -1617,6 +1629,7 @@ body.neon-shift-active .recent-battle-card {
     justify-content: center;
     gap: 8px;
     width: 100%;
+    flex-wrap: wrap;
   }
 
   .player-side {
@@ -1647,8 +1660,8 @@ body.neon-shift-active .recent-battle-card {
   }
 
   .hold-preview canvas {
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
   }
 
   .next-preview {
@@ -1656,13 +1669,13 @@ body.neon-shift-active .recent-battle-card {
   }
 
   .next-preview canvas {
-    width: 25px;
-    height: 20px;
+    width: 20px;
+    height: 16px;
   }
 
   /* AI 레벨 패널 */
   .ai-level-panel {
-    padding: 6px 10px;
+    padding: 5px 8px;
   }
 
   .ai-level-panel .label {
@@ -1670,27 +1683,31 @@ body.neon-shift-active .recent-battle-card {
   }
 
   .ai-level-panel .value {
-    font-size: 0.8rem;
+    font-size: 0.72rem;
   }
 
   /* 보드 크기 조정 */
   .board-wrap {
-    padding: 6px;
+    padding: 4px;
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-width: 0;
+    min-height: 0;
   }
 
   .board-wrap canvas {
-    width: 100%;
+    width: auto;
     height: auto;
-    max-height: calc(100vh - 220px);
+    max-width: 100%;
+    max-height: min(100%, calc(100dvh - 320px));
+    aspect-ratio: 1 / 2;
   }
 
   /* AI 보드는 더 작게 */
   .lane.ai-lane .board-wrap canvas {
-    max-height: calc(100vh - 180px);
+    max-height: min(100%, calc(100dvh - 420px));
   }
 
   /* 모바일 컨트롤 */
@@ -1700,10 +1717,10 @@ body.neon-shift-active .recent-battle-card {
     bottom: calc(10px + var(--safe-bottom));
     left: 50%;
     transform: translateX(-50%);
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 8px;
-    padding: 12px;
-    width: min(92vw, 430px);
+    padding: 10px;
+    width: min(96vw, 520px);
     background: var(--glass-bg-strong);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
@@ -1714,14 +1731,15 @@ body.neon-shift-active .recent-battle-card {
     display: none;
   }
 
-.mobile-controls button {
-  width: var(--mobile-btn-size);
-  height: var(--mobile-btn-size);
+ .mobile-controls button {
+  width: max(var(--mobile-btn-size), 64px);
+  height: max(var(--mobile-btn-size), 64px);
+  justify-self: center;
   background: rgba(0, 240, 255, 0.1);
   border: 1px solid rgba(0, 240, 255, 0.3);
     border-radius: 10px;
     color: var(--neon-cyan);
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     cursor: pointer;
   transition: all 0.1s;
 }
@@ -1740,19 +1758,30 @@ body.neon-shift-active .recent-battle-card {
   .battle-widgets {
     left: 10px;
     right: 10px;
-    bottom: calc(92px + var(--safe-bottom));
+    bottom: calc(max(var(--mobile-controls-height), calc(var(--mobile-btn-size) * 2 + 44px)) + 6px + var(--safe-bottom));
     width: auto;
-    gap: 8px;
+    gap: 6px;
   }
 
   .widget-card {
-    padding: 10px 12px;
+    padding: 8px 10px;
   }
 
   .status-chip,
   .incoming-chip {
-    min-height: 30px;
-    padding: 5px 9px;
+    min-height: 28px;
+    padding: 4px 8px;
+  }
+
+  .status-name,
+  .incoming-name {
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+  }
+
+  .status-time,
+  .incoming-time {
+    font-size: 0.62rem;
   }
 
   .battle-callout {
@@ -1860,31 +1889,76 @@ body.neon-shift-active .recent-battle-card {
 /* 작은 모바일 화면 추가 조정 */
 @media (max-width: 400px) {
   .mobile-controls button {
-    width: calc(var(--mobile-btn-size) - 7px);
-    height: calc(var(--mobile-btn-size) - 7px);
+    width: max(calc(var(--mobile-btn-size) - 4px), 58px);
+    height: max(calc(var(--mobile-btn-size) - 4px), 58px);
     font-size: 1rem;
   }
 
   .board-wrap canvas {
-    max-height: calc(100vh - 200px);
+    max-height: min(100%, calc(100dvh - 292px));
   }
 }
 
 /* 가로 모바일 */
 @media (max-width: 768px) and (orientation: landscape) {
+  :root {
+    --mobile-controls-height: 118px;
+  }
+
   .stage {
     grid-template-columns: 3fr 2fr;
-    padding-bottom: calc(70px + var(--safe-bottom));
+    gap: 8px;
+    padding-bottom: calc(max(var(--mobile-controls-height), calc(var(--mobile-btn-size) * 2 + 34px)) + 10px + var(--safe-bottom));
   }
 
   .mobile-controls {
-    grid-template-columns: repeat(6, 1fr);
-    bottom: calc(5px + var(--safe-bottom));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    bottom: calc(6px + var(--safe-bottom));
+    width: min(98vw, 760px);
+    gap: 6px;
+    padding: 8px 10px;
   }
 
   .mobile-controls button {
-    width: calc(var(--mobile-btn-size) - 10px);
-    height: calc(var(--mobile-btn-size) - 10px);
+    width: max(calc(var(--mobile-btn-size) - 2px), 58px);
+    height: max(calc(var(--mobile-btn-size) - 2px), 58px);
+    font-size: 1.15rem;
+  }
+
+  .mobile-status-bar {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .lane-title {
+    font-size: 0.58rem;
+    padding: 3px 8px;
+  }
+
+  .side-panel {
+    gap: 6px;
+  }
+
+  .board-wrap canvas {
+    max-height: min(100%, calc(100dvh - 170px));
+  }
+
+  .lane.ai-lane .board-wrap canvas {
+    max-height: min(100%, calc(100dvh - 220px));
+  }
+
+  .battle-widgets {
+    bottom: calc(max(var(--mobile-controls-height), calc(var(--mobile-btn-size) * 2 + 34px)) + 4px + var(--safe-bottom));
+  }
+
+  .widget-card {
+    padding: 7px 9px;
+  }
+
+  .status-chip,
+  .incoming-chip {
+    min-height: 26px;
+    padding: 3px 7px;
   }
 }
 

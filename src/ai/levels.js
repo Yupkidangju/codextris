@@ -1,10 +1,11 @@
 ﻿/*
- * [v3.13.0] AI 난이도 설정
+ * [v3.15.0] AI 난이도 설정
  * 
  * 작성일: 2026-02-28
  * 변경사항: 캐릭터 보이스 시스템 추가 (Feature 9)
  *   - [v3.9.0] Rule-Break Boss 전용 규칙 공격 패턴 확장
  *   - [v3.13.0] 보스 패턴 사용 확률 재조정
+ *   - [v3.15.0] 후반 난이도 공격 빈도를 완화해 룰 파괴 패턴의 피로도를 낮춤
  */
 
 /**
@@ -81,7 +82,7 @@ export const AI_LEVELS = {
   "기사": {
     reactionMs: 450,
     mistake: 0.12,
-    attackChance: 0.26,
+    attackChance: 0.22,
     specialPatterns: ["GarbagePush", "CorruptNext", "GravityJolt"],
     bossMode: false,
     bossModeThreshold: 0,
@@ -91,7 +92,7 @@ export const AI_LEVELS = {
   "마왕군주": {
     reactionMs: 300,
     mistake: 0.06,
-    attackChance: 0.38,
+    attackChance: 0.32,
     specialPatterns: ["GarbagePush", "CorruptNext", "GravityJolt", "StackShake", "Darkness", "HoldLock", "GhostOut"],
     bossMode: true,
     bossModeThreshold: 30,  // HP 30% 이하에서 분노 모드
@@ -101,7 +102,7 @@ export const AI_LEVELS = {
   "데몬킹": {
     reactionMs: 180,
     mistake: 0.02,
-    attackChance: 0.52,
+    attackChance: 0.44,
     specialPatterns: ["GarbagePush", "CorruptNext", "GravityJolt", "StackShake", "Darkness", "MirrorMove", "RotationTax", "GaugeLeech", "NextScramble"],
     bossMode: true,
     bossModeThreshold: 50,  // HP 50% 이하에서 분노 모드
@@ -119,7 +120,7 @@ export function getBossModeConfig(baseConfig) {
   return {
     ...baseConfig,
     reactionMs: Math.max(100, baseConfig.reactionMs * 0.6),  // 속도 1.6배
-    attackChance: Math.min(0.82, baseConfig.attackChance * 1.45),  // 공격 확률 증가
+    attackChance: Math.min(0.72, baseConfig.attackChance * 1.35),  // 공격 확률 증가
     mistake: Math.max(0.01, baseConfig.mistake * 0.5),  // 실수 확률 감소
     isBossMode: true
   };

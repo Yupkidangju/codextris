@@ -7,7 +7,7 @@
 ### 소개
 좌측 플레이어 vs 우측 AI 대전 테트리스 게임입니다. 현대적인 네온 UI와 화려한 시각 효과, 풍부한 게임성을 갖춘 프로덕션급 웹 게임입니다.
 
-### 주요 기능 (v3.14.2)
+### 주요 기능 (v3.15.1)
 - 🎮 **3가지 필살기 스킬**: 블라인드(1), 블록 스왑(2), 가비지 반사(3)
 - 🔥 **피버 모드**: 10콤보+ 시 BGM 1.3배속 + 공격력 1.5배
 - 💣 **아이템 시스템**: 폭탄(3x3 파괴), 별(1줄 클리어), 실드(가비지 차단)
@@ -32,6 +32,8 @@
 - 🎹 **Combat Orchestration**: 패턴 공격, 규칙 공격, 스킬 합성, 피버 타입, `Neon Shift`가 현재 곡 위에 짧은 전투 프레이즈를 덧씌운다
 - ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE`가 `Neon Shift`와 결합해 추가 파동, 실드, 넥스트 교란, 파형 압박으로 이어진다
 - 🧭 **HUD Polish**: 상태 칩 우선순위 정렬, `RESIDUE xN`, `+N MORE` 축약으로 전투 가독성을 높였다
+- ⚖️ **Balance Pass**: 보스 규칙 공격 빈도/지속시간, 패턴 공격 강도, 피버 연장량을 조정해 전투 압박을 더 읽기 쉽게 다듬었다
+- 📱 **Mobile Layout Pass**: 모바일 보드를 더 작게, 버튼은 더 크게 재배치해 세로/가로 화면에서 조작 가능 영역을 확보했다
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo`가 잔상 행을 소모해 공격을 절삭, 무효화, 역교란, 역압박한다
 - 🧪 **Final DEV Polish**: DEV PANEL에 `shift / residue / resonance / counter` 메타와 세션 카운터를 추가해 장시간 튜닝이 쉬워졌다
 
@@ -72,7 +74,7 @@
 ### Introduction
 Player (left) vs AI (right) battle Tetris game. A production-grade web game with modern neon UI, dazzling visual effects, and rich gameplay.
 
-### Key Features (v3.14.2)
+### Key Features (v3.15.1)
 - 🎮 **3 Special Skills**: Blind (1), Block Swap (2), Garbage Reflect (3)
 - 🔥 **Fever Mode**: 10+ combo triggers 1.3x BGM speed + 1.5x attack power
 - 💣 **Item System**: Bomb (3x3 destroy), Star (1 line clear), Shield (block garbage)
@@ -97,6 +99,8 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 - 🎹 **Combat Orchestration**: Pattern attacks, rule-breaks, skill fusions, fever variants, and `Neon Shift` add short combat phrases on top of the current track
 - ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE` now resonate with `Neon Shift` to trigger extra wave pressure, shields, next scrambling, or pulse attacks
 - 🧭 **HUD Polish**: Status chips are priority-sorted, show `RESIDUE xN`, and collapse overflow into `+N MORE` for cleaner combat readability
+- ⚖️ **Balance Pass**: Boss rule-break frequency, debuff durations, pattern strength, and fever extension were tuned down for clearer pacing
+- 📱 **Mobile Layout Pass**: Mobile boards were scaled down and buttons enlarged to preserve playable space in both portrait and landscape
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo` consume residue rows to shave, nullify, scramble back, or echo pressure
 - 🧪 **Final DEV Polish**: The dev panel now exposes `shift / residue / resonance / counter` metadata and longer-session tuning counters
 
@@ -137,7 +141,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 概要
 左側プレイヤー対右側AIの対戦テトリスゲームです。モダンなネオンUIと華麗なビジュアルエフェクト、豊かなゲーム性を持つプロダクション級ウェブゲームです。
 
-### 主な機能 (v3.14.2)
+### 主な機能 (v3.15.1)
 - 🎮 **3つの必殺技スキル**: ブラインド(1)、ブロック交換(2)、ガーベジ反射(3)
 - 🔥 **フィーバーモード**: 10コンボ以上でBGM 1.3倍速 + 攻撃力1.5倍
 - 💣 **アイテムシステム**: 爆弾(3x3破壊)、スター(1ライン消去)、シールド(ガーベジブロック)
@@ -162,6 +166,8 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 - 🎹 **Combat Orchestration**: パターン攻撃、ルール破壊、スキル合成、フィーバー種別、`Neon Shift` が現在の曲に短い戦闘フレーズを重ねる
 - ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE` が `Neon Shift` と共鳴し、追加波動、即時シールド、NEXT攪乱、パルス攻撃へ発展
 - 🧭 **HUD Polish**: 状態チップを優先度順に並べ、`RESIDUE xN` と `+N MORE` で戦闘情報を圧縮表示
+- ⚖️ **Balance Pass**: ボス規則攻撃の頻度・持続、パターン攻撃強度、フィーバー延長量を抑えて読みやすいテンポに調整
+- 📱 **Mobile Layout Pass**: モバイルでは盤面を縮小し、ボタンを大型化して縦横どちらでも操作しやすく調整
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo` が残像行を消費して圧力を削り、無効化し、逆攪乱し、反撃する
 - 🧪 **Final DEV Polish**: DEV PANEL に `shift / residue / resonance / counter` メタと長時間調整用カウンタを追加
 
@@ -202,7 +208,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 介紹
 左側玩家對戰右側AI的俄羅斯方塊遊戲。具有現代霓虹UI、華麗視覺效果和豐富遊戲性的專業級網頁遊戲。
 
-### 主要功能 (v3.14.2)
+### 主要功能 (v3.15.1)
 - 🎮 **3種必殺技**: 失明(1)、方塊交換(2)、垃圾反射(3)
 - 🔥 **狂熱模式**: 10連擊以上BGM 1.3倍速 + 攻擊力1.5倍
 - 💣 **道具系統**: 炸彈(3x3破壞)、星星(消除1行)、盾牌(阻擋垃圾行)
@@ -227,6 +233,8 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 - 🎹 **Combat Orchestration**: 模式攻擊、規則破壞、技能合成、Fever 類型與 `Neon Shift` 會在現有樂曲上疊加短促戰鬥樂句
 - ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE` 會與 `Neon Shift` 共鳴，衍生成額外波動、即時護盾、NEXT 擾亂與脈衝攻擊
 - 🧭 **HUD Polish**: 狀態晶片依優先度排序，並用 `RESIDUE xN` 與 `+N MORE` 壓縮戰鬥資訊
+- ⚖️ **Balance Pass**: 下調 Boss 規則攻擊頻率與持續時間、樣式攻擊強度與 Fever 延長量，讓戰鬥節奏更清楚
+- 📱 **Mobile Layout Pass**: 手機版縮小盤面並放大按鈕，讓直向與橫向畫面都保有可操作空間
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo` 會消耗殘像列來削減、無效化、反向擾亂與回推壓力
 - 🧪 **Final DEV Polish**: DEV PANEL 新增 `shift / residue / resonance / counter` 中繼資料與長局調校計數
 
@@ -267,7 +275,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 介绍
 左侧玩家对战右侧AI的俄罗斯方块游戏。具有现代霓虹UI、华丽视觉效果和丰富游戏性的专业级网页游戏。
 
-### 主要功能 (v3.14.2)
+### 主要功能 (v3.15.1)
 - 🎮 **3种必杀技**: 致盲(1)、方块交换(2)、垃圾反射(3)
 - 🔥 **狂热模式**: 10连击以上BGM 1.3倍速 + 攻击力1.5倍
 - 💣 **道具系统**: 炸弹(3x3破坏)、星星(消除1行)、盾牌(阻挡垃圾行)
@@ -292,6 +300,8 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 - 🎹 **Combat Orchestration**: 模式攻击、规则破坏、技能合成、Fever 类型与 `Neon Shift` 会在当前曲目上叠加短促战斗乐句
 - ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE` 会与 `Neon Shift` 共鸣，衍生额外波动压制、即时护盾、NEXT 扰乱与脉冲攻击
 - 🧭 **HUD Polish**: 状态芯片按优先级排序，并用 `RESIDUE xN` 与 `+N MORE` 压缩战斗信息
+- ⚖️ **Balance Pass**: 下调 Boss 规则攻击频率与持续时间、样式攻击强度与 Fever 延长量，让战斗节奏更清晰
+- 📱 **Mobile Layout Pass**: 手机版缩小游戏盘面并放大按钮，让竖屏与横屏都保留可操作空间
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo` 会消耗残像行来削减、无效化、反向扰乱与回推压制
 - 🧪 **Final DEV Polish**: DEV PANEL 新增 `shift / residue / resonance / counter` 元数据与长局调校计数
 
@@ -340,5 +350,5 @@ MIT License
 
 ---
 
-**Version:** 3.14.2  
+**Version:** 3.15.1  
 **Last Updated:** 2026-03-02

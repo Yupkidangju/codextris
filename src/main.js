@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.14.2] 메인 엔트리 포인트
+ * [v3.15.1] 메인 엔트리 포인트
  * 
  * 작성일: 2026-03-01
  * 변경사항: 
@@ -19,6 +19,8 @@
  *   - [v3.14.0] Layer Counter Matrix, Shift 종료 이벤트, DEV 메타 확장
  *   - [v3.14.1] 일시정지 입력 차단 보강, 난이도별 흔들림 감쇠 조정, 외부 감사 후속 수정
  *   - [v3.14.2] 아이템 글로우 예외 및 자동 고정 체감 수정 반영
+ *   - [v3.15.0] 전투 콜아웃 중복 억제와 STATUS/INCOMING 압축 렌더링 추가
+ *   - [v3.15.1] 모바일 보드 축소/버튼 확대 기준 보정
  */
 
 import { createGame } from "./game/core/engine.js";
@@ -314,6 +316,8 @@ let lastSpecialReady = false;
 let lastIncomingCount = 0;
 let lastBossPhase = 0;
 let hiddenPausedGame = false;
+let lastCalloutSignature = "";
+let lastCalloutAt = 0;
 let sessionMetrics = createSessionMetrics();
 let sessionDiagnostics = createSessionDiagnostics();
 let lastAudioCtxState = "";
@@ -560,7 +564,7 @@ function applyUiSettings() {
   uiSettings.sfxVolume = clamp(Number(uiSettings.sfxVolume) || 0, 0, 100);
   uiSettings.voiceVolume = clamp(Number(uiSettings.voiceVolume) || 0, 0, 100);
   uiSettings.shake = clamp(Number(uiSettings.shake) || 0, 0, 100);
-  uiSettings.mobileScale = clamp(Number(uiSettings.mobileScale) || 100, 90, 130);
+  uiSettings.mobileScale = clamp(Number(uiSettings.mobileScale) || 100, 90, 140);
   uiSettings.touchRepeat = clamp(Number(uiSettings.touchRepeat) || 75, 45, 120);
   uiSettings.muted = !!uiSettings.muted;
   uiSettings.reducedFx = !!uiSettings.reducedFx;
@@ -590,7 +594,7 @@ function applyUiSettings() {
   document.body.classList.toggle("reduced-effects", uiSettings.reducedFx);
   document.body.classList.toggle("low-power-mode", uiSettings.lowPower);
   applyMobileLayoutPreset(uiSettings.mobileLayout);
-  document.documentElement.style.setProperty("--mobile-btn-size", `${Math.round(55 * (uiSettings.mobileScale / 100))}px`);
+  document.documentElement.style.setProperty("--mobile-btn-size", `${Math.round(68 * (uiSettings.mobileScale / 100))}px`);
 
   if (masterVolumeSlider) {
     masterVolumeSlider.value = String(uiSettings.masterVolume);
@@ -934,7 +938,7 @@ function recordRuntimeError(source, error) {
 
 function exportSessionDiagnostics() {
   const snapshot = {
-    buildVersion: "3.14.2",
+    buildVersion: "3.15.1",
     deviceMeta: getDeviceMeta(),
     uiSettings,
     sessionDiagnostics,
@@ -1218,6 +1222,13 @@ function syncBattleWidgetsVisibility() {
 
 function showBattleCallout(title, subtitle = "", tone = "", voiceTag = "") {
   if (!battleCallout || !battleCalloutTitle || !battleCalloutSubtitle) return;
+  const now = performance.now();
+  const signature = `${title}::${subtitle}::${tone}`;
+  if (signature === lastCalloutSignature && (now - lastCalloutAt) < 420) {
+    return;
+  }
+  lastCalloutSignature = signature;
+  lastCalloutAt = now;
 
   if (tone === "gold" || tone === "warn") {
     audio.duckBgm?.(tone === "gold" ? 0.74 : 0.8, 0.3);
@@ -1328,7 +1339,8 @@ function renderStatusEffects(playerState) {
     return;
   }
 
-  const visibleEffects = effects.slice(0, 5);
+  const maxVisibleEffects = detectMobile() ? 4 : 5;
+  const visibleEffects = effects.slice(0, maxVisibleEffects);
   const hiddenCount = Math.max(0, effects.length - visibleEffects.length);
   statusEffects.innerHTML = visibleEffects
     .map(({ label, time, tone }) => {
@@ -1379,15 +1391,42 @@ function renderIncomingPreview() {
     return;
   }
 
-  incomingQueue.innerHTML = pendingAttacks
-    .slice(0, 4)
-    .map((pending) => {
-      const type = pending.attackEvent?.type || "Unknown";
-      const strength = pending.attackEvent?.strength || 0;
-      const tone = type === "GarbagePush" ? "garbage" : "special";
-      const suffix = type === "GarbagePush" ? ` +${strength}` : "";
-      return `<div class="incoming-chip ${tone}"><span class="incoming-name">${getIncomingAttackLabel(type)}${suffix}</span><span class="incoming-time">${formatRemainingTime(pending.remainingMs / 1000)}</span></div>`;
+  const grouped = new Map();
+  pendingAttacks.forEach((pending) => {
+    const type = pending.attackEvent?.type || "Unknown";
+    const strength = Math.max(0, pending.attackEvent?.strength || 0);
+    const current = grouped.get(type) || {
+      type,
+      totalStrength: 0,
+      count: 0,
+      minRemainingMs: Number.POSITIVE_INFINITY,
+    };
+    current.totalStrength += strength;
+    current.count += 1;
+    current.minRemainingMs = Math.min(current.minRemainingMs, pending.remainingMs || 0);
+    grouped.set(type, current);
+  });
+
+  const groupedAttacks = [...grouped.values()].sort((a, b) => {
+    if (a.type === "GarbagePush" && b.type !== "GarbagePush") return -1;
+    if (a.type !== "GarbagePush" && b.type === "GarbagePush") return 1;
+    return a.minRemainingMs - b.minRemainingMs;
+  });
+  const maxVisibleIncoming = detectMobile() ? 3 : 4;
+  const visibleIncoming = groupedAttacks.slice(0, maxVisibleIncoming);
+  const hiddenCount = Math.max(0, groupedAttacks.length - visibleIncoming.length);
+
+  incomingQueue.innerHTML = visibleIncoming
+    .map((entry) => {
+      const tone = entry.type === "GarbagePush" ? "garbage" : "special";
+      const amountText = entry.type === "GarbagePush"
+        ? ` +${entry.totalStrength}`
+        : entry.count > 1
+          ? ` x${entry.count}`
+          : "";
+      return `<div class="incoming-chip ${tone}"><span class="incoming-name">${getIncomingAttackLabel(entry.type)}${amountText}</span><span class="incoming-time">${formatRemainingTime(entry.minRemainingMs / 1000)}</span></div>`;
     })
+    .concat(hiddenCount > 0 ? [`<div class="incoming-chip meta"><span class="incoming-name">+${hiddenCount} MORE</span></div>`] : [])
     .join("");
 }
 

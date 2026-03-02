@@ -6,6 +6,27 @@
 
 ---
 
+## [3.15.1] - 2026-03-02
+
+### 변경됨 (Changed)
+- Mobile Layout Pass
+  - 모바일 컨트롤을 `5열 2행` 기준으로 재배치해 버튼을 더 크게 유지하면서 세로 점유율을 줄임
+  - 세로/가로 모바일 모두 보드 `max-height`를 더 강하게 제한해 갤럭시 S26급 화면에서 잘림을 줄임
+  - `BUTTON SIZE` 슬라이더 상한을 `140%`로 넓히고, 기본 모바일 버튼 기준 크기를 상향 조정
+  - `STATUS/INCOMING` 위젯과 스테이지 하단 여백을 실제 버튼 크기 기준으로 다시 계산해 겹침을 줄임
+
+## [3.15.0] - 2026-03-02
+
+### 변경됨 (Changed)
+- Balance Pass
+  - `기사 / 마왕군주 / 데몬킹`의 규칙 공격 발동 확률과 보스 모드 공격 확률 상한을 하향 조정
+  - 패턴 공격(`PierceBarrage / DrillHex / WavePush / NullBurst`) 강도를 한 단계 완화
+  - `Corrupt / Jolt / Stagger / Darkness / Mirror / HoldLock / GhostOut / RotationTax / GaugeLeech / Scramble` 지속시간과 흡수량을 줄여 대응 가능성을 높임
+  - 피버 연장량, `SURGE` 아이템 배수, `Neon Shift` 보너스 가비지 상한을 낮춰 후반 과열 시간을 완화
+- HUD Polish
+  - `STATUS`는 모바일에서 최대 4개까지만 노출하고, `INCOMING`은 동일 공격 타입을 묶어 표시하도록 조정
+  - 전투 콜아웃에 짧은 중복 억제 쿨다운을 넣어 동일 메시지 연타를 줄임
+
 ## [3.14.2] - 2026-03-02
 
 ### 수정됨 (Fixed)

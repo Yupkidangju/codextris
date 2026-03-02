@@ -1,9 +1,10 @@
 /*
- * [v3.11.0] 피버 모드 시스템
+ * [v3.15.0] 피버 모드 시스템
  * 
  * 작성일: 2026-02-28
  * 변경사항: 피버 모드 초기 구현 - 10콤보 이상 시 활성화
  *   - [v3.11.0] 피버 타입 분기와 전장 변형 메타 추가
+ *   - [v3.15.0] 피버 연장량과 최대 누적치를 낮춰 후반 과열 시간을 줄임
  * 
  * 기능:
  *   - 10콤보 이상 시 피버 모드 진입
@@ -29,7 +30,7 @@
 const FEVER_CONFIG = {
   COMBO_THRESHOLD: 10,      // [v2.1.0] 피버 진입 콤보 기준
   MAX_DURATION: 10,         // [v2.1.0] 기본 지속 시간 (초)
-  EXTEND_DURATION: 2,       // [v2.1.0] 라인 클리어 시 연장 시간 (초)
+  EXTEND_DURATION: 1.5,     // [v3.15.0] 라인 클리어 시 연장 시간 (초)
   MULTIPLIER: 1.5,          // [v2.1.0] 공격 배수
   BGM_SPEED: 1.3,           // [v2.1.0] BGM 재생 속도
   BGM_NORMAL: 1.0,          // [v2.1.0] 일반 BGM 속도
@@ -185,7 +186,7 @@ export function extendFeverDuration(linesCleared) {
   const extendAmount = FEVER_CONFIG.EXTEND_DURATION * linesCleared;
   feverState.timer = Math.min(
     feverState.timer + extendAmount,
-    feverState.maxDuration * 1.5  // 최대 1.5배까지만 연장 가능
+    feverState.maxDuration * 1.35  // [v3.15.0] 최대 1.35배까지만 연장 가능
   );
   
   feverState.totalExtended += extendAmount;

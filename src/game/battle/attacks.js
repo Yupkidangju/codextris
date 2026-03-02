@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.13.0] 배틀 공격 시스템
+ * [v3.15.0] 배틀 공격 시스템
  *
  * 작성일: 2026-02-28
  * 변경사항:
@@ -8,6 +8,7 @@
  *   - [v3.9.0] Rule-Break Boss 규칙 공격 타입 추가
  *   - [v3.10.0] 패턴 공격 태그 변환 및 신규 공격 타입 추가
  *   - [v3.13.0] 패턴 공격 강도 재조정
+ *   - [v3.15.0] 패턴 공격 강도를 한 단계 완화해 기본 가비지와의 격차를 줄임
  */
 
 import { garbageForLines } from "../core/constants.js";
@@ -16,25 +17,25 @@ const PATTERN_ATTACK_CONFIG = {
   pierceBarrage: {
     type: "PierceBarrage",
     strength(baseStrength) {
-      return Math.max(2, baseStrength);
+      return Math.max(2, Math.ceil(baseStrength * 0.85));
     },
   },
   drillHex: {
     type: "DrillHex",
     strength(baseStrength) {
-      return Math.max(1, baseStrength);
+      return Math.max(1, Math.ceil(baseStrength * 0.8));
     },
   },
   wavePush: {
     type: "WavePush",
     strength(baseStrength) {
-      return Math.max(1, baseStrength);
+      return Math.max(1, Math.ceil(baseStrength * 0.75));
     },
   },
   nullBurst: {
     type: "NullBurst",
     strength(baseStrength) {
-      return Math.max(2, baseStrength);
+      return Math.max(2, Math.ceil(baseStrength * 0.8));
     },
   },
 };

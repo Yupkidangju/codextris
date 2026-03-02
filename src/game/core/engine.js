@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.14.2] 메인 게임 엔진
+ * [v3.15.0] 메인 게임 엔진
  * 
  * 작성일: 2026-02-28
  * 변경사항: 
@@ -19,6 +19,7 @@
  *   - [v3.14.0] 레이어 카운터 매트릭스, Shift 종료 이벤트, 최종 게임필 메타 추가
  *   - [v3.14.1] 일시정지 중 입력 누수 차단 및 스폰 보조 우선순위 문서화
  *   - [v3.14.2] 아이템 글로우 색상 파싱 예외 수정 및 바닥 접촉 후 자동 고정 누적 로직 보정
+ *   - [v3.15.0] 전투 밸런스와 HUD 가독성 패스: 규칙 공격 지속시간/보너스 압박/피버 배수 완화
  */
 
 import { Board } from "./board.js";
@@ -289,15 +290,15 @@ function syncFeverMutationState(state) {
     state.feverType = FEVER_TYPES.FORGE;
     state.feverGuardCharges = 0;
     state.nextPreviewCount = 3;
-    state.itemSpawnMultiplier = (state.neonItemBoostUntil || 0) > now ? 3.1 : 1;
+    state.itemSpawnMultiplier = (state.neonItemBoostUntil || 0) > now ? 2.5 : 1;
     return;
   }
 
   state.feverType = fever.type;
   state.nextPreviewCount = fever.type === FEVER_TYPES.SCAN ? 5 : 3;
   state.itemSpawnMultiplier = Math.max(
-    fever.type === FEVER_TYPES.SURGE ? 2.4 : 1,
-    (state.neonItemBoostUntil || 0) > now ? 3.1 : 1
+    fever.type === FEVER_TYPES.SURGE ? 1.9 : 1,
+    (state.neonItemBoostUntil || 0) > now ? 2.5 : 1
   );
   if (fever.type === FEVER_TYPES.GUARD) {
     if (state.feverGuardCharges <= 0) {
@@ -316,25 +317,25 @@ function applySkillFusion(who, fusion, nowMs, queue, getRng, onEvent) {
 
   switch (fusion.type) {
     case SkillFusionType.PHANTOM_MIRROR:
-      opponentManager.applyBlind(7000);
+      opponentManager.applyBlind(6200);
       userManager.activeEffects.garbageReflect = {
         active: true,
-        endTime: nowMs + 7000,
+        endTime: nowMs + 6200,
       };
-      who.opponent.state.mirrorMoveUntil = Math.max(who.opponent.state.mirrorMoveUntil, nowMs + 4000);
+      who.opponent.state.mirrorMoveUntil = Math.max(who.opponent.state.mirrorMoveUntil, nowMs + 3200);
       return { label: "PHANTOM MIRROR", tone: "gold" };
 
     case SkillFusionType.DISTORT_FIELD:
-      opponentManager.applyBlind(6500);
+      opponentManager.applyBlind(5600);
       shuffleNextQueue(who.opponent.state, getRng(), 3);
-      who.opponent.state.nextScrambleUntil = Math.max(who.opponent.state.nextScrambleUntil, nowMs + 4000);
-      who.opponent.state.inputDelayUntil = Math.max(who.opponent.state.inputDelayUntil, nowMs + 350);
+      who.opponent.state.nextScrambleUntil = Math.max(who.opponent.state.nextScrambleUntil, nowMs + 3200);
+      who.opponent.state.inputDelayUntil = Math.max(who.opponent.state.inputDelayUntil, nowMs + 280);
       return { label: "DISTORT FIELD", tone: "warn" };
 
     case SkillFusionType.BACKFLOW_SHIFT:
       userManager.activeEffects.garbageReflect = {
         active: true,
-        endTime: nowMs + 6500,
+        endTime: nowMs + 5600,
       };
       queue.sendAttack(who.state.id, who.opponent.state.id, {
         type: "GarbagePush",
@@ -362,7 +363,7 @@ function applyNeonShiftBonus(who, cleared, tSpinType, isPerfectClear, patternInf
     bonusGarbage += 1;
   }
 
-  bonusGarbage = Math.min(3, bonusGarbage);
+  bonusGarbage = Math.min(2, bonusGarbage);
   if (bonusGarbage <= 0) return;
 
   queue.sendAttack(state.id, who.opponent.state.id, {
@@ -402,7 +403,7 @@ function applyLayerResonance(who, cleared, tSpinType, patternInfo, nowMs, queue,
 
   if (!resonance) return;
 
-  state.neonResonanceUntil = nowMs + 1800;
+  state.neonResonanceUntil = nowMs + 2200;
 
   if (attack) {
     queue.sendAttack(state.id, who.opponent.state.id, attack, nowMs);
@@ -467,7 +468,7 @@ function applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng) {
       label: "FORGE BREAK",
       subtitle: shavedAttack.strength > 0 ? "PRESSURE SHAVED" : "PRESSURE CUT",
       tone: "gold",
-      cooldownMs: 1650,
+      cooldownMs: 1900,
     });
     return { attack: shavedAttack, cancelled: shavedAttack.strength <= 0, counterType: "forge" };
   }
@@ -479,7 +480,7 @@ function applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng) {
       label: "GUARD LATTICE",
       subtitle: "SPECIAL NULL",
       tone: "gold",
-      cooldownMs: 2200,
+      cooldownMs: 2500,
     });
     return { attack, cancelled: true, counterType: "guard" };
   }
@@ -502,14 +503,14 @@ function applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng) {
       label: "SCAN TRACE",
       subtitle: "TRACE JAM",
       tone: "warn",
-      cooldownMs: 1900,
+      cooldownMs: 2200,
     });
     return { attack, cancelled: false, counterType: "scan" };
   }
 
   if (state.feverType === FEVER_TYPES.SURGE && (isGarbagePressure || isPulsePressure) && (attack.strength || 0) > 0) {
     if (!consumeNeonResidue(state, nowMs)) return { attack, cancelled: false, counterType: "" };
-    state.neonItemBoostUntil = Math.max(state.neonItemBoostUntil || 0, nowMs + 3200);
+    state.neonItemBoostUntil = Math.max(state.neonItemBoostUntil || 0, nowMs + 2400);
     queue.sendAttack(state.id, targetWho.opponent.state.id, {
       type: "WavePush",
       strength: 1,
@@ -527,7 +528,7 @@ function applyLayerCounter(targetWho, attack, nowMs, onEvent, queue, getRng) {
       label: "SURGE ECHO",
       subtitle: "PULSE RETURN",
       tone: "gold",
-      cooldownMs: 1750,
+      cooldownMs: 2050,
     });
     return { attack: echoedAttack, cancelled: echoedAttack.strength <= 0, counterType: "surge" };
   }
@@ -1388,7 +1389,7 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
       const badPieces = ["S", "Z", "L", "J"];
       const count = Math.min(3, Math.max(1, attack.strength));
       const seedIndex = Math.floor((attack.seed || 0) * badPieces.length);
-      state.corruptNextUntil = nowMs + 5000;
+      state.corruptNextUntil = nowMs + 4200;
       for (let i = 0; i < count && i < state.queue.length; i++) {
         state.queue[i] = badPieces[(seedIndex + i) % badPieces.length];
       }
@@ -1406,7 +1407,7 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
       if (!board.collides(state.piece, state.rot, state.x, state.y + 1)) {
         state.y += 1;
       }
-      state.gravityJoltUntil = nowMs + 1800;
+      state.gravityJoltUntil = nowMs + 1400;
       break;
       
     case "StackShake":
@@ -1418,7 +1419,7 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
           break;
         }
       }
-      state.inputDelayUntil = nowMs + 420;
+      state.inputDelayUntil = nowMs + 320;
       const el = document.getElementById(state.id === "player" ? "playerCanvas" : "aiCanvas");
       if (el) shakeElement(el);
       break;
@@ -1432,7 +1433,7 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
           break;
         }
       }
-      state.darknessUntil = nowMs + 2600;
+      state.darknessUntil = nowMs + 2100;
       break;
       
     case "MirrorMove":
@@ -1444,7 +1445,7 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
           break;
         }
       }
-      state.mirrorMoveUntil = nowMs + 4200;
+      state.mirrorMoveUntil = nowMs + 3200;
       break;
 
     case "HoldLock":
@@ -1456,7 +1457,7 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
           break;
         }
       }
-      state.holdLockUntil = nowMs + 3200;
+      state.holdLockUntil = nowMs + 2500;
       break;
 
     case "GhostOut":
@@ -1468,7 +1469,7 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
           break;
         }
       }
-      state.ghostHiddenUntil = nowMs + 4200;
+      state.ghostHiddenUntil = nowMs + 3200;
       break;
 
     case "RotationTax":
@@ -1479,7 +1480,7 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
           break;
         }
       }
-      state.rotationTaxUntil = nowMs + 4600;
+      state.rotationTaxUntil = nowMs + 3400;
       deliveredAmount = 12;
       break;
 
@@ -1491,8 +1492,8 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
           break;
         }
       }
-      deliveredAmount = drainStateGauge(state, 35);
-      state.gaugeLeechUntil = nowMs + 2400;
+      deliveredAmount = drainStateGauge(state, 24);
+      state.gaugeLeechUntil = nowMs + 1800;
       break;
 
     case "NextScramble":
@@ -1504,7 +1505,7 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
         }
       }
       shuffleNextQueue(state, attack.seed || Math.random(), 3);
-      state.nextScrambleUntil = nowMs + 3600;
+      state.nextScrambleUntil = nowMs + 2800;
       break;
 
     case "PierceBarrage":
@@ -1530,7 +1531,7 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
       }
       const badPieces = ["S", "Z", "L", "J"];
       const seedIndex = Math.floor((attack.seed || 0) * badPieces.length);
-      state.corruptNextUntil = nowMs + 4000;
+      state.corruptNextUntil = nowMs + 3200;
       for (let i = 0; i < Math.min(2, state.queue.length); i++) {
         state.queue[i] = badPieces[(seedIndex + i) % badPieces.length];
       }
@@ -1569,7 +1570,7 @@ function applyAttack(targetWho, attack, nowMs, onEvent, queue, getRng) {
       }
       board.pushGarbage(deliveredAmount, -1);
       drainStateGauge(state, 25);
-      state.gaugeLeechUntil = nowMs + 2500;
+      state.gaugeLeechUntil = nowMs + 1800;
       break;
   }
 
