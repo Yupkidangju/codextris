@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.14.1] 메인 게임 엔진
+ * [v3.14.2] 메인 게임 엔진
  * 
  * 작성일: 2026-02-28
  * 변경사항: 
@@ -18,6 +18,7 @@
  *   - [v3.13.0] Layer Resonance, 밸런스 패스, HUD 친화 메타 추가
  *   - [v3.14.0] 레이어 카운터 매트릭스, Shift 종료 이벤트, 최종 게임필 메타 추가
  *   - [v3.14.1] 일시정지 중 입력 누수 차단 및 스폰 보조 우선순위 문서화
+ *   - [v3.14.2] 아이템 글로우 색상 파싱 예외 수정 및 바닥 접촉 후 자동 고정 누적 로직 보정
  */
 
 import { Board } from "./board.js";
@@ -1727,18 +1728,27 @@ export function createGame(config) {
     while (who.state.dropAcc >= 1) {
       who.state.dropAcc -= 1;
       if (!tryMove(who.state, who.board, 0, 1)) {
-        // 바닥에 닿음 - 락 딜레이 시작
-        who.state.lockAcc += dt * 1000;
-        if (who.state.lockAcc >= LOCK_DELAY_MS) {
-          who.state.lockAcc = 0;
-          who.state.dropAcc = 0;  // [v2.0.1-fix] lockPiece 호출 후 dropAcc 초기화
-          lockPiece(who, bag, nowMs, queue, () => bag.rnd(), config.onEvent, shakeScreen, resolveAiSpecialAttack, who.state.id === "player" ? heldPlayerActions : null);
-          break;
-        }
+        // [v3.14.2] 바닥에 닿았을 때는 중력 스텝 수와 무관하게 프레임 시간 기준으로 락을 누적한다.
+        // 여기서는 더 이상 아래로 내릴 수 없다는 사실만 확정하고, 실제 고정 카운트는 루프 바깥 grounded 판정에서 처리한다.
+        who.state.dropAcc = 0;
+        break;
       } else {
         // 낙하 성공 - 락 딜레이 리셋
         who.state.lockAcc = 0;
       }
+    }
+
+    const grounded = who.board.collides(who.state.piece, who.state.rot, who.state.x, who.state.y + 1);
+    if (grounded) {
+      who.state.lockAcc += dt * 1000;
+      if (who.state.lockAcc >= LOCK_DELAY_MS) {
+        who.state.lockAcc = 0;
+        who.state.dropAcc = 0;
+        lockPiece(who, bag, nowMs, queue, () => bag.rnd(), config.onEvent, shakeScreen, resolveAiSpecialAttack, who.state.id === "player" ? heldPlayerActions : null);
+        return;
+      }
+    } else {
+      who.state.lockAcc = 0;
     }
     
     // 배틀 공격 적용

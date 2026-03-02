@@ -4486,7 +4486,8 @@ class ItemEffects {
     // 폭발 원
     const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
     gradient.addColorStop(0, config.explosionColor + "ff");
-    gradient.addColorStop(0.5, config.explosionGlow + Math.floor(alpha * 255).toString(16).padStart(2, "0"));
+    const explosionAlphaHex = Math.max(0, Math.min(255, Math.round(alpha * 255))).toString(16).padStart(2, "0");
+    gradient.addColorStop(0.5, config.explosionGlow + explosionAlphaHex);
     gradient.addColorStop(1, config.explosionGlow + "00");
 
     ctx.fillStyle = gradient;
@@ -4524,7 +4525,8 @@ class ItemEffects {
     // 수평 빔
     const gradient = ctx.createLinearGradient(x, y - beamWidth / 2, x, y + beamWidth / 2);
     gradient.addColorStop(0, config.beamColor + "00");
-    gradient.addColorStop(0.5, config.beamColor + Math.floor(alpha * 255).toString(16).padStart(2, "0"));
+    const beamAlphaHex = Math.max(0, Math.min(255, Math.round(alpha * 255))).toString(16).padStart(2, "0");
+    gradient.addColorStop(0.5, config.beamColor + beamAlphaHex);
     gradient.addColorStop(1, config.beamColor + "00");
 
     ctx.fillStyle = gradient;
@@ -4610,7 +4612,8 @@ class ItemEffects {
     ctx.shadowBlur = 20;
 
     // 테두리 선
-    ctx.strokeStyle = ITEM_EFFECT_CONFIG.shield.activationColor + Math.floor(alpha * 255).toString(16).padStart(2, "0");
+    const shieldAlphaHex = Math.max(0, Math.min(255, Math.round(alpha * 255))).toString(16).padStart(2, "0");
+    ctx.strokeStyle = ITEM_EFFECT_CONFIG.shield.activationColor + shieldAlphaHex;
     ctx.lineWidth = 4;
     ctx.strokeRect(boardX - 5, boardY - 5, boardWidth + 10, boardHeight + 10);
 

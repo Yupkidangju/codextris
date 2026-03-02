@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.14.1] 메인 엔트리 포인트
+ * [v3.14.2] 메인 엔트리 포인트
  * 
  * 작성일: 2026-03-01
  * 변경사항: 
@@ -18,6 +18,7 @@
  *   - [v3.13.0] Layer Resonance, 상태 HUD 우선순위 정리, Orchestration 2.0 연동
  *   - [v3.14.0] Layer Counter Matrix, Shift 종료 이벤트, DEV 메타 확장
  *   - [v3.14.1] 일시정지 입력 차단 보강, 난이도별 흔들림 감쇠 조정, 외부 감사 후속 수정
+ *   - [v3.14.2] 아이템 글로우 예외 및 자동 고정 체감 수정 반영
  */
 
 import { createGame } from "./game/core/engine.js";
@@ -933,7 +934,7 @@ function recordRuntimeError(source, error) {
 
 function exportSessionDiagnostics() {
   const snapshot = {
-    buildVersion: "3.14.1",
+    buildVersion: "3.14.2",
     deviceMeta: getDeviceMeta(),
     uiSettings,
     sessionDiagnostics,
