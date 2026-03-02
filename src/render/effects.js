@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.14.0] 이펙트 렌더링 엔진
+ * [v3.14.1] 이펙트 렌더링 엔진
  * 
  * 작성일: 2026-02-28
  * 변경사항: 
@@ -10,6 +10,7 @@
  *   - 전투 초반 프리즈 완화를 위한 이펙트 상한 및 밀도 조정
  *   - ScreenImpact 히트스톱/보스/KO 프리셋 추가
  *   - [v3.14.0] 레이어 카운터/Shift 종료 프리셋 추가
+ *   - [v3.14.1] 난이도별 화면 흔들림 감쇠 프로파일 조정 API 추가
  */
 
 /**
@@ -461,6 +462,10 @@ export class ScreenImpact {
    */
   pulse(intensity = 1.0) {
     this.energy = Math.min(2.0, this.energy + intensity);
+  }
+
+  setDecay(value = 4.0) {
+    this.decay = Math.max(3.6, Math.min(5.4, Number(value) || 4.0));
   }
 
   lineClear(lines = 1, meta = {}) {

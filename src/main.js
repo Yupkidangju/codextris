@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.14.0] 메인 엔트리 포인트
+ * [v3.14.1] 메인 엔트리 포인트
  * 
  * 작성일: 2026-03-01
  * 변경사항: 
@@ -17,6 +17,7 @@
  *   - [v3.12.0] Neon Shift/Residue HUD와 Combat Orchestration 오디오 연동
  *   - [v3.13.0] Layer Resonance, 상태 HUD 우선순위 정리, Orchestration 2.0 연동
  *   - [v3.14.0] Layer Counter Matrix, Shift 종료 이벤트, DEV 메타 확장
+ *   - [v3.14.1] 일시정지 입력 차단 보강, 난이도별 흔들림 감쇠 조정, 외부 감사 후속 수정
  */
 
 import { createGame } from "./game/core/engine.js";
@@ -208,8 +209,9 @@ const achievementSystem = initAchievements(showAchievementNotification, () => {
   audio.playAchievementUnlockSound?.();
 });
 
-const SETTINGS_STORAGE_KEY = "codextirs.settings.v3.14.0";
+const SETTINGS_STORAGE_KEY = "codextirs.settings.v3.14.1";
 const LEGACY_SETTINGS_STORAGE_KEYS = [
+  "codextirs.settings.v3.14.0",
   "codextirs.settings.v3.13.0",
   "codextirs.settings.v3.12.0",
   "codextirs.settings.v3.8.0",
@@ -721,6 +723,25 @@ function applyUiSettings() {
   syncTouchDebugPanel();
   syncDevPanel();
   renderMissionChecklist();
+  syncImpactProfile();
+}
+
+function isGameplayInputBlocked() {
+  return document.body.classList.contains("settings-open")
+    || document.body.classList.contains("result-open")
+    || document.body.classList.contains("briefing-open")
+    || !!pauseOverlay?.classList.contains("visible");
+}
+
+function syncImpactProfile(levelName = selectedDifficulty) {
+  const decayByLevel = {
+    병아리: 4.1,
+    하수인: 4.25,
+    기사: 4.4,
+    마왕군주: 4.65,
+    데몬킹: 4.9,
+  };
+  impact.setDecay?.(decayByLevel[levelName] || 4.4);
 }
 
 function syncAudioStatus() {
@@ -912,7 +933,7 @@ function recordRuntimeError(source, error) {
 
 function exportSessionDiagnostics() {
   const snapshot = {
-    buildVersion: "3.8.0",
+    buildVersion: "3.14.1",
     deviceMeta: getDeviceMeta(),
     uiSettings,
     sessionDiagnostics,
@@ -2166,6 +2187,7 @@ function dispatch(playerId, action) {
 function applyDifficulty(levelName) {
   selectedDifficulty = levelName;
   game.setDifficulty(levelName);
+  syncImpactProfile(levelName);
   if (difficultyBadge) {
     difficultyBadge.textContent = `AI: ${levelName}`;
     difficultyBadge.classList.toggle("danger", levelName === "데몬킹");
@@ -2301,9 +2323,7 @@ function togglePause() {
 installKeyboard(dispatch, {
   getKeyMapping: () => uiSettings.keyboard,
   getInputTuning: () => uiSettings.inputTuning,
-  isInputBlocked: () => document.body.classList.contains("settings-open")
-    || document.body.classList.contains("result-open")
-    || document.body.classList.contains("briefing-open"),
+  isInputBlocked: isGameplayInputBlocked,
   enqueueBufferedAction: (action) => {
     const queued = game?.enqueueBufferedAction?.("player", action);
     if (queued) {
@@ -2326,9 +2346,7 @@ installTouch(dispatch, {
   isHapticsEnabled: () => uiSettings.hapticLevel !== "off",
   getHapticLevel: () => uiSettings.hapticLevel,
   getRepeatInterval: () => uiSettings.touchRepeat,
-  isInputBlocked: () => document.body.classList.contains("settings-open")
-    || document.body.classList.contains("result-open")
-    || document.body.classList.contains("briefing-open"),
+  isInputBlocked: isGameplayInputBlocked,
   onTouchDebug: handleTouchDebug,
   onInputMetric: recordInputMetric,
   onHeldActionChange: (action, isDown) => {

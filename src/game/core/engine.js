@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.14.0] 메인 게임 엔진
+ * [v3.14.1] 메인 게임 엔진
  * 
  * 작성일: 2026-02-28
  * 변경사항: 
@@ -17,6 +17,7 @@
  *   - [v3.12.0] Neon Shift/Residue 오버레이와 Shift 보너스 압박 추가
  *   - [v3.13.0] Layer Resonance, 밸런스 패스, HUD 친화 메타 추가
  *   - [v3.14.0] 레이어 카운터 매트릭스, Shift 종료 이벤트, 최종 게임필 메타 추가
+ *   - [v3.14.1] 일시정지 중 입력 누수 차단 및 스폰 보조 우선순위 문서화
  */
 
 import { Board } from "./board.js";
@@ -956,6 +957,9 @@ function applySpawnAssist(who, bag, nowMs, queue, getRng, onEvent, shakeScreen, 
   const tuning = state.inputTuning || INPUT_PRESETS.standard;
   const skipHold = !!options.skipHold;
 
+  // [v3.14.1] 스폰 보조는 IHS -> IRS -> 입력 버퍼 순서를 유지한다.
+  // 같은 스폰 프레임 안에서 즉시 실행되므로 체감 지연은 없고,
+  // 우선순위를 바꾸면 문서화된 입력 규칙과 실제 조작 기대치가 달라진다.
   if (!skipHold && tuning.ihsEnabled && heldActions?.has("hold")) {
     if (holdSwap(state, bag)) {
       onEvent("hold");
@@ -1805,6 +1809,7 @@ export function createGame(config) {
       syncAiBossMode();
     },
     dispatchInput(playerId, action) {
+      if (!running) return false;
       const nowMs = performance.now();
       const target = playerId === "player" ? player : ai;
       return applyInput(target, action, bag, nowMs, queue, () => bag.rnd(), config.onEvent, shakeScreen, resolveAiSpecialAttack, playerId === "player" ? heldPlayerActions : null);

@@ -1,5 +1,5 @@
 /*
- * [v3.11.0] 아이템 시스템 (Item System)
+ * [v3.14.1] 아이템 시스템 (Item System)
  * 
  * 작성일: 2026-02-28
  * 변경사항: 
@@ -7,6 +7,7 @@
  *   - 아이템 블록 스폰 로직 (5% 확률)
  *   - 아이템 효과 처리 및 연쇄 반응 지원
  *   - [v3.11.0] 피버 SURGE 타입용 아이템 확률 배수 지원
+ *   - [v3.14.1] 아이템 블록 글로우 대비를 15% 상향해 일반 블록과 차이를 더 명확히 표시
  */
 
 import { BOARD_WIDTH, BOARD_HEIGHT } from "./constants.js";
@@ -530,6 +531,7 @@ export function renderItemBlock(ctx, x, y, size, itemType, time = Date.now()) {
     // 실드: 부드러운 오라
     glowIntensity = 0.6 + 0.4 * Math.sin(time / 300);
   }
+  glowIntensity *= 1.15;
 
   // 외부 글로우
   const gradient = ctx.createRadialGradient(

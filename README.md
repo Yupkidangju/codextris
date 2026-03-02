@@ -7,7 +7,7 @@
 ### 소개
 좌측 플레이어 vs 우측 AI 대전 테트리스 게임입니다. 현대적인 네온 UI와 화려한 시각 효과, 풍부한 게임성을 갖춘 프로덕션급 웹 게임입니다.
 
-### 주요 기능 (v3.14.0)
+### 주요 기능 (v3.14.1)
 - 🎮 **3가지 필살기 스킬**: 블라인드(1), 블록 스왑(2), 가비지 반사(3)
 - 🔥 **피버 모드**: 10콤보+ 시 BGM 1.3배속 + 공격력 1.5배
 - 💣 **아이템 시스템**: 폭탄(3x3 파괴), 별(1줄 클리어), 실드(가비지 차단)
@@ -55,6 +55,7 @@
 
 ### 문제 해결
 - `Esc` 또는 `P`는 한 번 누를 때마다 일시정지 상태를 한 번만 전환합니다.
+- 일반 일시정지 화면이 보이는 동안에는 이동/회전/드롭 입력이 차단되며, `Esc`/`P`만 재개 토글로 허용됩니다.
 - 모바일에서는 하단 버튼 `1 / 2 / 3`으로 스킬을 사용하며, 게이지 MAX 시에만 활성화됩니다.
 - 소리가 작으면 상단 `SETTINGS`에서 `MASTER / BGM / SFX / VOICE`를 각각 올리고, 필요하면 `ARCADE` 또는 `CINEMATIC` 프리셋과 `TEST MIX`로 바로 확인하세요.
 - 모바일에서는 `SETTINGS`에서 `LAYOUT`, `BUTTON SIZE`, `REPEAT`, `HAPTIC LEVEL`을 조절하고, 세로 화면에서는 회전 힌트를 따르세요.
@@ -70,7 +71,7 @@
 ### Introduction
 Player (left) vs AI (right) battle Tetris game. A production-grade web game with modern neon UI, dazzling visual effects, and rich gameplay.
 
-### Key Features (v3.14.0)
+### Key Features (v3.14.1)
 - 🎮 **3 Special Skills**: Blind (1), Block Swap (2), Garbage Reflect (3)
 - 🔥 **Fever Mode**: 10+ combo triggers 1.3x BGM speed + 1.5x attack power
 - 💣 **Item System**: Bomb (3x3 destroy), Star (1 line clear), Shield (block garbage)
@@ -118,6 +119,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 
 ### Troubleshooting
 - `Esc` or `P` now toggles pause exactly once per key press.
+- While the normal pause overlay is visible, move/rotate/drop inputs are blocked and only `Esc`/`P` can resume the match.
 - On mobile, use the bottom `1 / 2 / 3` buttons for skills; they unlock only when the gauge is full.
 - If the mix feels too quiet, open `SETTINGS`, raise `MASTER / BGM / SFX / VOICE` separately, or try the `ARCADE` or `CINEMATIC` preset with `TEST MIX`.
 - On mobile, use `LAYOUT`, `BUTTON SIZE`, `REPEAT`, and `HAPTIC LEVEL` in `SETTINGS`, and follow the rotate hint when portrait mode feels cramped.
@@ -133,7 +135,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 概要
 左側プレイヤー対右側AIの対戦テトリスゲームです。モダンなネオンUIと華麗なビジュアルエフェクト、豊かなゲーム性を持つプロダクション級ウェブゲームです。
 
-### 主な機能 (v3.14.0)
+### 主な機能 (v3.14.1)
 - 🎮 **3つの必殺技スキル**: ブラインド(1)、ブロック交換(2)、ガーベジ反射(3)
 - 🔥 **フィーバーモード**: 10コンボ以上でBGM 1.3倍速 + 攻撃力1.5倍
 - 💣 **アイテムシステム**: 爆弾(3x3破壊)、スター(1ライン消去)、シールド(ガーベジブロック)
@@ -181,6 +183,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 
 ### トラブルシューティング
 - `Esc` または `P` は1回の入力で1回だけポーズを切り替えます。
+- 通常のポーズオーバーレイ表示中は移動/回転/ドロップ入力を止め、`Esc`/`P` の再開トグルだけを許可します。
 - モバイルでは下部の `1 / 2 / 3` ボタンでスキルを使い、ゲージMAX時のみ有効です。
 - 音が小さい場合は `SETTINGS` で `MASTER / BGM / SFX / VOICE` を個別に上げるか、`ARCADE` または `CINEMATIC` と `TEST MIX` を試してください。
 - モバイルでは `SETTINGS` の `LAYOUT / BUTTON SIZE / REPEAT / HAPTIC LEVEL` を調整し、縦向き時は回転ヒントに従ってください。
@@ -196,7 +199,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 介紹
 左側玩家對戰右側AI的俄羅斯方塊遊戲。具有現代霓虹UI、華麗視覺效果和豐富遊戲性的專業級網頁遊戲。
 
-### 主要功能 (v3.14.0)
+### 主要功能 (v3.14.1)
 - 🎮 **3種必殺技**: 失明(1)、方塊交換(2)、垃圾反射(3)
 - 🔥 **狂熱模式**: 10連擊以上BGM 1.3倍速 + 攻擊力1.5倍
 - 💣 **道具系統**: 炸彈(3x3破壞)、星星(消除1行)、盾牌(阻擋垃圾行)
@@ -244,6 +247,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 
 ### 疑難排解
 - `Esc` 或 `P` 現在每次按下只會切換一次暫停狀態。
+- 一般暫停覆蓋層顯示期間會封鎖移動/旋轉/落下輸入，只保留 `Esc`/`P` 作為恢復切換。
 - 行動裝置請使用底部 `1 / 2 / 3` 按鈕施放技能，只有能量滿時才會啟用。
 - 如果覺得音量太小，請在 `SETTINGS` 分別提高 `MASTER / BGM / SFX / VOICE`，或使用 `ARCADE`/`CINEMATIC` 與 `TEST MIX` 立即確認。
 - 行動裝置可在 `SETTINGS` 調整 `LAYOUT / BUTTON SIZE / REPEAT / HAPTIC LEVEL`，直向畫面太擠時請依照旋轉提示操作。
@@ -259,7 +263,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 介绍
 左侧玩家对战右侧AI的俄罗斯方块游戏。具有现代霓虹UI、华丽视觉效果和丰富游戏性的专业级网页游戏。
 
-### 主要功能 (v3.14.0)
+### 主要功能 (v3.14.1)
 - 🎮 **3种必杀技**: 致盲(1)、方块交换(2)、垃圾反射(3)
 - 🔥 **狂热模式**: 10连击以上BGM 1.3倍速 + 攻击力1.5倍
 - 💣 **道具系统**: 炸弹(3x3破坏)、星星(消除1行)、盾牌(阻挡垃圾行)
@@ -307,6 +311,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 
 ### 故障排查
 - `Esc` 或 `P` 现在每次按下只会切换一次暂停状态。
+- 普通暂停覆盖层可见时会阻止移动/旋转/下落输入，只保留 `Esc`/`P` 作为恢复切换。
 - 移动端请使用底部 `1 / 2 / 3` 按钮释放技能，只有能量满时才会启用。
 - 如果觉得声音偏小，请在 `SETTINGS` 分别调高 `MASTER / BGM / SFX / VOICE`，或使用 `ARCADE`/`CINEMATIC` 和 `TEST MIX` 立即确认。
 - 移动端可在 `SETTINGS` 调整 `LAYOUT / BUTTON SIZE / REPEAT / HAPTIC LEVEL`，竖屏过挤时请按照旋转提示操作。
@@ -330,5 +335,5 @@ MIT License
 
 ---
 
-**Version:** 3.14.0  
+**Version:** 3.14.1  
 **Last Updated:** 2026-03-02

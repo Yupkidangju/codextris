@@ -1,11 +1,12 @@
 /*
- * [v3.7.0] 키보드 입력 처리
+ * [v3.14.1] 키보드 입력 처리
  *
  * 작성일: 2026-03-02
  * 변경사항:
  *   - Input Fidelity 2.0용 실시간 키맵/프리셋/재바인딩 캡처 지원
  *   - 좌우 독립 DAS/ARR, 최근 방향 우선 처리
  *   - 입력 계측, 버퍼 큐, 홀드 상태 전달 지원
+ *   - [v3.14.1] 일시정지 오버레이 차단 중에도 pause 토글은 허용하고, 반대 방향 키 복귀를 더 매끄럽게 보정
  */
 
 const DEFAULT_MAPPING = {
@@ -76,8 +77,10 @@ export function installKeyboard(dispatch, options = {}) {
     left: { timeout: null, interval: null },
     right: { timeout: null, interval: null },
   };
+  const horizontalPressOrder = new Map();
   let softDropInterval = null;
   let lastHorizontalAction = null;
+  let pressSequence = 0;
 
   const clearHorizontalTimer = (action) => {
     const timers = horizontalTimers[action];
@@ -151,18 +154,31 @@ export function installKeyboard(dispatch, options = {}) {
     }, repeatMs);
   };
 
+  const findHeldCodeForAction = (targetAction) => {
+    let selectedCode = null;
+    let selectedOrder = -1;
+    for (const [code, pressed] of keyState.entries()) {
+      if (!pressed) continue;
+      if (resolveActionMap(getKeyMapping()).get(code) !== targetAction) continue;
+      const order = horizontalPressOrder.get(code) || 0;
+      if (order >= selectedOrder) {
+        selectedCode = code;
+        selectedOrder = order;
+      }
+    }
+    return selectedCode;
+  };
+
   const stopAction = (action) => {
     if (action === "left" || action === "right") {
       clearHorizontalTimer(action);
       if (lastHorizontalAction === action) {
         const fallback = action === "left" ? "right" : "left";
-        if ([...keyState.entries()].some(([code, pressed]) => pressed && resolveActionMap(getKeyMapping()).get(code) === fallback)) {
+        const fallbackCode = findHeldCodeForAction(fallback);
+        if (fallbackCode) {
           lastHorizontalAction = fallback;
-          const fallbackCode = [...keyState.entries()].find(([code, pressed]) => pressed && resolveActionMap(getKeyMapping()).get(code) === fallback)?.[0];
-          if (fallbackCode) {
-            emitInput(fallback, "resume", fallbackCode);
-            beginHorizontalRepeat(fallback, fallbackCode);
-          }
+          emitInput(fallback, "resume", fallbackCode);
+          beginHorizontalRepeat(fallback, fallbackCode);
         } else {
           lastHorizontalAction = null;
         }
@@ -183,11 +199,11 @@ export function installKeyboard(dispatch, options = {}) {
       return;
     }
 
-    if (isInputBlocked()) return;
-
     const actionMap = resolveActionMap(getKeyMapping());
     const action = actionMap.get(e.code);
     if (!action) return;
+
+    if (isInputBlocked() && action !== "pause") return;
 
     e.preventDefault();
 
@@ -201,6 +217,7 @@ export function installKeyboard(dispatch, options = {}) {
     }
 
     if (action === "left" || action === "right") {
+      horizontalPressOrder.set(e.code, ++pressSequence);
       lastHorizontalAction = action;
       emitInput(action, "press", e.code);
       beginHorizontalRepeat(action, e.code);
@@ -220,6 +237,7 @@ export function installKeyboard(dispatch, options = {}) {
     const action = resolveActionMap(getKeyMapping()).get(e.code);
     if (!action) return;
     keyState.set(e.code, false);
+    horizontalPressOrder.delete(e.code);
     emitHeldState(action, false, e.code);
     stopAction(action);
     onInputMetric("release", action, { code: e.code });
@@ -227,6 +245,7 @@ export function installKeyboard(dispatch, options = {}) {
 
   window.addEventListener("blur", () => {
     keyState.clear();
+    horizontalPressOrder.clear();
     lastHorizontalAction = null;
     resetAllTimers();
     ["left", "right", "softDrop", "rotateCW", "rotateCCW", "hold"].forEach((action) => {

@@ -35,6 +35,9 @@
 27. `Forge Break / Guard Lattice / Scan Trace / Surge Echo`가 올바른 공격만 카운터하고 `Neon Residue` 1개를 소모하는지 확인
 28. `Neon Shift` 종료 시 `SHIFT FADE` 콜아웃과 약한 임팩트가 한 번만 발생하는지 확인
 29. DEV PANEL에서 `shift / residue / counter / resonance` 메타와 세션 카운터가 갱신되는지 확인
+30. 일반 일시정지(`pauseOverlay`)가 열린 동안 이동/회전/드롭 입력이 전혀 적용되지 않고 `Esc`/`P`만 재개 토글로 동작하는지 확인
+31. 좌우 방향키를 동시에 누른 상태에서 마지막 방향을 떼면 반대 방향 이동이 지연 없이 즉시 이어지는지 확인
+32. 난이도를 올릴수록 라인 클리어 화면 흔들림이 약간 더 빠르게 감쇠하고, 아이템 블록 글로우가 일반 블록보다 더 또렷하게 보이는지 확인
 
 ## 주의
 - `file://` 로 직접 열면 WASM fetch가 차단될 수 있음
