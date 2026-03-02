@@ -29,6 +29,9 @@
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
+  /* [v3.15.2] 동적 뷰포트 높이 변수 (JS에서 업데이트) */
+  --real-vh: 1vh;
+  --available-height: calc(100dvh - 250px);
 }
 
 /* ===== BASE ===== */
@@ -1642,35 +1645,47 @@ body.neon-shift-active .recent-battle-card {
     order: -1;
   }
 
-  /* HOLD/NEXT 미리보기 크기 조정 */
+  /* [v3.15.2] HOLD/NEXT 미리보기 크기 최적화 */
   .block-preview {
-    padding: 6px;
+    padding: 8px;
     flex-direction: row;
-    gap: 4px;
+    gap: 6px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    align-items: center;
   }
 
   .block-preview .label {
-    font-size: 0.5rem;
+    font-size: 0.55rem;
     writing-mode: vertical-rl;
     text-orientation: mixed;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
   }
 
   .hold-preview {
     flex-direction: row;
+    min-width: 60px;
   }
 
   .hold-preview canvas {
-    width: 24px;
-    height: 24px;
+    width: 36px;
+    height: 36px;
+    image-rendering: pixelated;
   }
 
   .next-preview {
     flex-direction: row;
+    flex-wrap: wrap;
+    max-width: 120px;
+    justify-content: center;
   }
 
   .next-preview canvas {
-    width: 20px;
-    height: 16px;
+    width: 28px;
+    height: 22px;
+    image-rendering: pixelated;
   }
 
   /* AI 레벨 패널 */
@@ -1686,7 +1701,7 @@ body.neon-shift-active .recent-battle-card {
     font-size: 0.72rem;
   }
 
-  /* 보드 크기 조정 */
+  /* [v3.15.2] 보드 크기 조정 - 동적 높이 계산 적용 */
   .board-wrap {
     padding: 4px;
     flex: 1;
@@ -1695,32 +1710,37 @@ body.neon-shift-active .recent-battle-card {
     justify-content: center;
     min-width: 0;
     min-height: 0;
+    overflow: hidden;
   }
 
   .board-wrap canvas {
     width: auto;
     height: auto;
     max-width: 100%;
-    max-height: min(100%, calc(100dvh - 320px));
+    /* 동적 가용 높이 사용 (JS에서 계산된 --available-height) */
+    max-height: min(100%, calc(var(--available-height) * 0.55));
     aspect-ratio: 1 / 2;
+    object-fit: contain;
   }
 
-  /* AI 보드는 더 작게 */
+  /* AI 보드는 더 작게 (플레이어 보드의 65% 크기) */
   .lane.ai-lane .board-wrap canvas {
-    max-height: min(100%, calc(100dvh - 420px));
+    max-height: min(100%, calc(var(--available-height) * 0.35));
   }
 
-  /* 모바일 컨트롤 */
+  /* [v3.15.2] 모바일 컨트롤 - 2열 그리드로 변경하여 모든 버튼 표시 */
   .mobile-controls {
     display: grid;
     position: fixed;
-    bottom: calc(10px + var(--safe-bottom));
+    bottom: calc(6px + var(--safe-bottom));
     left: 50%;
     transform: translateX(-50%);
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 8px;
-    padding: 10px;
+    grid-template-rows: repeat(2, 1fr);
+    gap: 6px;
+    padding: 8px;
     width: min(96vw, 520px);
+    height: 148px;
     background: var(--glass-bg-strong);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
@@ -1731,24 +1751,37 @@ body.neon-shift-active .recent-battle-card {
     display: none;
   }
 
- .mobile-controls button {
-  width: max(var(--mobile-btn-size), 64px);
-  height: max(var(--mobile-btn-size), 64px);
-  justify-self: center;
-  background: rgba(0, 240, 255, 0.1);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  .mobile-controls button {
+    width: max(calc(var(--mobile-btn-size) - 6px), 58px);
+    height: max(calc(var(--mobile-btn-size) - 6px), 58px);
+    justify-self: center;
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid rgba(0, 240, 255, 0.3);
     border-radius: 10px;
     color: var(--neon-cyan);
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     cursor: pointer;
-  transition: all 0.1s;
-}
+    transition: all 0.1s;
+  }
 
-.mobile-controls button:disabled {
-  opacity: 0.45;
-  color: var(--text-muted);
-  border-color: rgba(107, 141, 176, 0.25);
-}
+  /* 2행에 배치할 버튼들 (HOLD, 스킬 1,2,3) */
+  .mobile-controls button[data-action="hold"],
+  .mobile-controls button[data-action="skill1"],
+  .mobile-controls button[data-action="skill2"],
+  .mobile-controls button[data-action="skill3"] {
+    grid-row: 2;
+  }
+
+  .mobile-controls button[data-action="hold"] { grid-column: 2; }
+  .mobile-controls button[data-action="skill1"] { grid-column: 3; }
+  .mobile-controls button[data-action="skill2"] { grid-column: 4; }
+  .mobile-controls button[data-action="skill3"] { grid-column: 5; }
+
+  .mobile-controls button:disabled {
+    opacity: 0.45;
+    color: var(--text-muted);
+    border-color: rgba(107, 141, 176, 0.25);
+  }
 
   .mobile-controls button:active {
     background: rgba(0, 240, 255, 0.3);
@@ -1899,36 +1932,82 @@ body.neon-shift-active .recent-battle-card {
   }
 }
 
-/* 가로 모바일 */
+/* [v3.15.2] 가로 모바일 - 개선된 레이아웃 및 동적 높이 계산 */
 @media (max-width: 768px) and (orientation: landscape) {
   :root {
-    --mobile-controls-height: 118px;
+    --mobile-controls-height: 72px;
+  }
+
+  /* 상단바 축소 */
+  .topbar {
+    height: calc(36px + var(--safe-top));
+    padding-top: calc(4px + var(--safe-top));
+    padding-bottom: 4px;
+  }
+
+  .topbar h1 {
+    font-size: 0.8rem;
+  }
+
+  /* 상태바 축소 */
+  .mobile-status-bar {
+    padding: 4px calc(8px + var(--safe-right)) 4px calc(8px + var(--safe-left));
+  }
+
+  .status-item .label {
+    font-size: 0.5rem;
+  }
+
+  .status-item .value {
+    font-size: 0.75rem;
   }
 
   .stage {
     grid-template-columns: 3fr 2fr;
-    gap: 8px;
-    padding-bottom: calc(max(var(--mobile-controls-height), calc(var(--mobile-btn-size) * 2 + 34px)) + 10px + var(--safe-bottom));
+    gap: 6px;
+    padding: 4px calc(6px + var(--safe-right)) calc(var(--mobile-controls-height) + 8px + var(--safe-bottom)) calc(6px + var(--safe-left));
+    align-items: center;
   }
 
+  /* [v3.15.2] 가로 모드 보드 크기 - 동적 높이 사용 */
+  .board-wrap canvas {
+    max-height: min(100%, calc(var(--available-height) * 0.85));
+    max-width: 100%;
+  }
+
+  .lane.ai-lane .board-wrap canvas {
+    max-height: min(100%, calc(var(--available-height) * 0.7));
+  }
+
+  /* 가로 모드 컨트롤 - 1열로 변경하여 공간 절약 */
   .mobile-controls {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    bottom: calc(6px + var(--safe-bottom));
-    width: min(98vw, 760px);
-    gap: 6px;
-    padding: 8px 10px;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    grid-template-rows: 1fr;
+    height: var(--mobile-controls-height);
+    bottom: calc(4px + var(--safe-bottom));
+    width: min(98vw, 800px);
+    gap: 4px;
+    padding: 6px 10px;
   }
 
   .mobile-controls button {
-    width: max(calc(var(--mobile-btn-size) - 2px), 58px);
-    height: max(calc(var(--mobile-btn-size) - 2px), 58px);
-    font-size: 1.15rem;
+    width: max(calc(var(--mobile-btn-size) - 15px), 48px);
+    height: max(calc(var(--mobile-btn-size) - 15px), 48px);
+    font-size: 1rem;
   }
 
-  .mobile-status-bar {
-    padding-top: 6px;
-    padding-bottom: 6px;
+  /* 가로 모드에서 버튼 위치 초기화 (1열 배치) */
+  .mobile-controls button[data-action="hold"],
+  .mobile-controls button[data-action="skill1"],
+  .mobile-controls button[data-action="skill2"],
+  .mobile-controls button[data-action="skill3"] {
+    grid-row: 1;
   }
+
+  .mobile-controls button[data-action="hold"] { grid-column: auto; }
+  .mobile-controls button[data-action="skill1"] { grid-column: auto; }
+  .mobile-controls button[data-action="skill2"] { grid-column: auto; }
+  .mobile-controls button[data-action="skill3"] { grid-column: auto; }
 
   .lane-title {
     font-size: 0.58rem;
@@ -1936,15 +2015,23 @@ body.neon-shift-active .recent-battle-card {
   }
 
   .side-panel {
-    gap: 6px;
+    gap: 4px;
   }
 
-  .board-wrap canvas {
-    max-height: min(100%, calc(100dvh - 170px));
+  .block-preview {
+    padding: 4px;
   }
 
-  .lane.ai-lane .board-wrap canvas {
-    max-height: min(100%, calc(100dvh - 220px));
+  .hud-panel {
+    padding: 4px 6px;
+  }
+
+  .hud-panel .label {
+    font-size: 0.5rem;
+  }
+
+  .hud-panel .value {
+    font-size: 0.75rem;
   }
 
   .battle-widgets {
@@ -1959,6 +2046,72 @@ body.neon-shift-active .recent-battle-card {
   .incoming-chip {
     min-height: 26px;
     padding: 3px 7px;
+  }
+}
+
+/* [v3.15.2] 소형 가로 화면 대응 (iPhone SE 등) */
+@media (max-width: 667px) and (orientation: landscape) {
+  :root {
+    --mobile-controls-height: 64px;
+  }
+
+  .stage {
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 2px calc(4px + var(--safe-right)) calc(var(--mobile-controls-height) + 6px + var(--safe-bottom)) calc(4px + var(--safe-left));
+  }
+
+  /* 소형 화면에서는 AI 정보 패널 숨김 */
+  .ai-side .hud-panel,
+  .ai-side .ai-level-panel {
+    display: none;
+  }
+
+  /* 보드 크기 추가 축소 */
+  .board-wrap canvas {
+    max-height: min(100%, calc(var(--available-height) * 0.9));
+  }
+
+  .lane.ai-lane .board-wrap canvas {
+    max-height: min(100%, calc(var(--available-height) * 0.75));
+  }
+
+  /* 컨트롤 버튼 축소 */
+  .mobile-controls {
+    height: var(--mobile-controls-height);
+    gap: 3px;
+    padding: 4px 8px;
+  }
+
+  .mobile-controls button {
+    width: max(calc(var(--mobile-btn-size) - 20px), 42px);
+    height: max(calc(var(--mobile-btn-size) - 20px), 42px);
+    font-size: 0.85rem;
+    border-radius: 8px;
+  }
+
+  /* Hold/Next 더 작게 */
+  .hold-preview canvas {
+    width: 28px;
+    height: 28px;
+  }
+
+  .next-preview canvas {
+    width: 22px;
+    height: 18px;
+  }
+
+  .block-preview {
+    padding: 3px 5px;
+  }
+
+  .block-preview .label {
+    font-size: 0.45rem;
+  }
+
+  .lane-title {
+    font-size: 0.5rem;
+    padding: 2px 6px;
   }
 }
 

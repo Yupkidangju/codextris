@@ -26,7 +26,7 @@
 import { createGame } from "./game/core/engine.js";
 import { installKeyboard } from "./input/keyboard.js";
 import { installTouch } from "./input/touch.js";
-import { applyLayout, detectMobile } from "./ui/layout.js";
+import { applyLayout, detectMobile, initMobileLayout } from "./ui/layout.js";
 import { AudioEngine } from "./audio/midi_player.js";
 import { BackgroundFx } from "./render/background.js";
 import { ScreenImpact } from "./render/effects.js";
@@ -2393,7 +2393,8 @@ installTouch(dispatch, {
     game?.setHeldAction?.("player", action, isDown);
   },
 });
-applyLayout();
+// [v3.15.2] 모바일 레이아웃 초기화 (동적 뷰포트 계산 포함)
+initMobileLayout();
 renderMissionChecklist();
 syncTouchDebugPanel();
 syncRotateHint();
