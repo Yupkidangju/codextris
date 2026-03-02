@@ -7,7 +7,7 @@
 ### 소개
 좌측 플레이어 vs 우측 AI 대전 테트리스 게임입니다. 현대적인 네온 UI와 화려한 시각 효과, 풍부한 게임성을 갖춘 프로덕션급 웹 게임입니다.
 
-### 주요 기능 (v3.17.0)
+### 주요 기능 (v3.17.1)
 - 🎮 **3가지 필살기 스킬**: 블라인드(1), 블록 스왑(2), 가비지 반사(3)
 - 🔥 **피버 모드**: 10콤보+ 시 BGM 1.3배속 + 공격력 1.5배
 - 💣 **아이템 시스템**: 폭탄(3x3 파괴), 별(1줄 클리어), 실드(가비지 차단)
@@ -35,6 +35,7 @@
 - ⚖️ **Balance Pass**: 보스 규칙 공격 빈도/지속시간, 패턴 공격 강도, 피버 연장량을 조정해 전투 압박을 더 읽기 쉽게 다듬었다
 - 📱 **Mobile Layout Pass**: 모바일 보드를 더 작게, 버튼은 더 크게 재배치해 세로/가로 화면에서 조작 가능 영역을 확보했다
 - 📐 **Container-Driven Mobile Canvas**: 모바일 보드 크기는 CSS가 배정한 실제 컨테이너 크기를 기준으로 계산하고, `ResizeObserver`로 회전/주소창 변화에 맞춰 다시 맞춘다
+- 📱 **Class-Driven Mobile Override**: `stage.mobile`과 `body.mobile-layout`가 모바일 레이아웃을 강제로 유지해 가로 모바일에서도 데스크톱 3컬럼으로 되돌아가지 않는다
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo`가 잔상 행을 소모해 공격을 절삭, 무효화, 역교란, 역압박한다
 - 🧪 **Final DEV Polish**: DEV PANEL에 `shift / residue / resonance / counter` 메타와 세션 카운터를 추가해 장시간 튜닝이 쉬워졌다
 
@@ -75,7 +76,7 @@
 ### Introduction
 Player (left) vs AI (right) battle Tetris game. A production-grade web game with modern neon UI, dazzling visual effects, and rich gameplay.
 
-### Key Features (v3.17.0)
+### Key Features (v3.17.1)
 - 🎮 **3 Special Skills**: Blind (1), Block Swap (2), Garbage Reflect (3)
 - 🔥 **Fever Mode**: 10+ combo triggers 1.3x BGM speed + 1.5x attack power
 - 💣 **Item System**: Bomb (3x3 destroy), Star (1 line clear), Shield (block garbage)
@@ -103,6 +104,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 - ⚖️ **Balance Pass**: Boss rule-break frequency, debuff durations, pattern strength, and fever extension were tuned down for clearer pacing
 - 📱 **Mobile Layout Pass**: Mobile boards were scaled down and buttons enlarged to preserve playable space in both portrait and landscape
 - 📐 **Container-Driven Mobile Canvas**: On mobile, board size now follows the actual board container and resyncs through `ResizeObserver`
+- 📱 **Class-Driven Mobile Override**: `stage.mobile` and `body.mobile-layout` now force the mobile stack even when landscape viewport width grows
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo` consume residue rows to shave, nullify, scramble back, or echo pressure
 - 🧪 **Final DEV Polish**: The dev panel now exposes `shift / residue / resonance / counter` metadata and longer-session tuning counters
 
@@ -143,7 +145,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 概要
 左側プレイヤー対右側AIの対戦テトリスゲームです。モダンなネオンUIと華麗なビジュアルエフェクト、豊かなゲーム性を持つプロダクション級ウェブゲームです。
 
-### 主な機能 (v3.17.0)
+### 主な機能 (v3.17.1)
 - 🎮 **3つの必殺技スキル**: ブラインド(1)、ブロック交換(2)、ガーベジ反射(3)
 - 🔥 **フィーバーモード**: 10コンボ以上でBGM 1.3倍速 + 攻撃力1.5倍
 - 💣 **アイテムシステム**: 爆弾(3x3破壊)、スター(1ライン消去)、シールド(ガーベジブロック)
@@ -210,7 +212,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 介紹
 左側玩家對戰右側AI的俄羅斯方塊遊戲。具有現代霓虹UI、華麗視覺效果和豐富遊戲性的專業級網頁遊戲。
 
-### 主要功能 (v3.17.0)
+### 主要功能 (v3.17.1)
 - 🎮 **3種必殺技**: 失明(1)、方塊交換(2)、垃圾反射(3)
 - 🔥 **狂熱模式**: 10連擊以上BGM 1.3倍速 + 攻擊力1.5倍
 - 💣 **道具系統**: 炸彈(3x3破壞)、星星(消除1行)、盾牌(阻擋垃圾行)
@@ -277,7 +279,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 介绍
 左侧玩家对战右侧AI的俄罗斯方块游戏。具有现代霓虹UI、华丽视觉效果和丰富游戏性的专业级网页游戏。
 
-### 主要功能 (v3.17.0)
+### 主要功能 (v3.17.1)
 - 🎮 **3种必杀技**: 致盲(1)、方块交换(2)、垃圾反射(3)
 - 🔥 **狂热模式**: 10连击以上BGM 1.3倍速 + 攻击力1.5倍
 - 💣 **道具系统**: 炸弹(3x3破坏)、星星(消除1行)、盾牌(阻挡垃圾行)
@@ -352,5 +354,5 @@ MIT License
 
 ---
 
-**Version:** 3.17.0  
+**Version:** 3.17.1  
 **Last Updated:** 2026-03-02

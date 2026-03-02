@@ -1,6 +1,6 @@
 ﻿/*
  * Dual Tetris Battle: Neon Wars - Main Stylesheet
- * [v3.17.0] 입력 정밀 설정, QA 패널, 게임필, 피버 변형, 네온 레이어 UI 대응
+ * [v3.17.1] 입력 정밀 설정, QA 패널, 게임필, 피버 변형, 네온 레이어 UI 대응
  * 
  * 작성일: 2026-03-02
  * 변경사항: 3컬럼 구조 (Player/Center/AI), 모바일 상단 상태바, 1080p 타이틀 적합화, 스크롤바 거터 제거, 상태 HUD 메타 칩 추가, 모바일 보드 축소/버튼 확대
@@ -2107,4 +2107,242 @@ body.mobile-layout-righty .mobile-controls {
 body.mobile-layout-compact .mobile-controls {
   grid-template-columns: repeat(5, 1fr);
   width: min(94vw, 500px);
+}
+
+/* [v3.17.1] 클래스 기반 모바일 강제 오버라이드
+   - JS의 stage.mobile / body.mobile-layout 토글이 실제 모바일 레이아웃을 강제한다.
+   - 가로 모바일에서 viewport 폭이 768px을 넘어도 데스크톱 3컬럼으로 복귀하지 않도록 보정한다. */
+body.mobile-layout .app {
+  height: var(--app-height, 100dvh);
+  min-height: var(--app-height, 100dvh);
+}
+
+body.mobile-layout .mobile-status-bar {
+  display: flex;
+}
+
+.stage.mobile {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-areas: "main-board";
+  align-items: stretch;
+  justify-items: center;
+  gap: 0;
+  padding:
+    8px
+    calc(10px + var(--safe-right))
+    calc(var(--mobile-controls-height) + 10px + var(--safe-bottom))
+    calc(10px + var(--safe-left));
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.stage.mobile .center-panel {
+  display: none;
+}
+
+.stage.mobile .lane.player-lane {
+  grid-area: main-board;
+  position: relative;
+  width: 100%;
+  max-width: min(100%, 420px);
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(64px, auto) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    "side title"
+    "side board";
+  gap: 8px;
+  align-items: start;
+  justify-self: center;
+  z-index: 10;
+}
+
+.stage.mobile .lane.player-lane .lane-title {
+  grid-area: title;
+  justify-self: end;
+  align-self: start;
+  font-size: 0.6rem;
+  padding: 4px 10px;
+}
+
+.stage.mobile .lane.player-lane .side-panel {
+  grid-area: side;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+  justify-content: flex-start;
+  min-width: 64px;
+}
+
+.stage.mobile .lane.player-lane .board-wrap {
+  grid-area: board;
+  width: 100%;
+  height: 100%;
+  max-height: min(60dvh, 100%);
+  aspect-ratio: 1 / 2;
+  padding: 6px;
+  justify-self: center;
+  align-self: start;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.stage.mobile .lane.player-lane .board-wrap canvas {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  aspect-ratio: 1 / 2;
+  object-fit: contain;
+}
+
+.stage.mobile .lane.ai-lane {
+  position: absolute;
+  top: 8px;
+  right: calc(10px + var(--safe-right));
+  width: min(84px, 24vw);
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "title"
+    "board";
+  gap: 4px;
+  padding: 4px;
+  z-index: 20;
+  opacity: 0.96;
+  background: rgba(8, 16, 32, 0.84);
+  border: 1px solid rgba(100, 180, 255, 0.22);
+  border-radius: 10px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.24);
+}
+
+.stage.mobile .lane.ai-lane .lane-title {
+  grid-area: title;
+  justify-self: center;
+  font-size: 0.48rem;
+  padding: 2px 6px;
+}
+
+.stage.mobile .lane.ai-lane .side-panel,
+.stage.mobile .lane.ai-lane .ai-level-panel,
+.stage.mobile .lane.ai-lane .boss-hp-panel {
+  display: none;
+}
+
+.stage.mobile .lane.ai-lane .board-wrap {
+  grid-area: board;
+  width: 100%;
+  height: auto;
+  max-height: min(22dvh, 160px);
+  aspect-ratio: 1 / 2;
+  padding: 3px;
+}
+
+.stage.mobile .lane.ai-lane .board-wrap canvas {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+body.mobile-layout .mobile-controls:not(.hidden) {
+  position: fixed;
+  left: 50%;
+  right: auto;
+  bottom: calc(8px + var(--safe-bottom));
+  transform: translateX(-50%);
+  height: auto;
+  min-height: 0;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  width: min(96vw, 520px);
+  background: rgba(8, 16, 32, 0.92);
+  border: 1px solid rgba(100, 180, 255, 0.22);
+  border-radius: 14px;
+  z-index: 80;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+}
+
+body.mobile-layout .mobile-controls:not(.hidden) button {
+  width: 100%;
+  min-width: 0;
+  height: max(var(--mobile-btn-size), 60px);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 240, 255, 0.28);
+  background: rgba(0, 240, 255, 0.12);
+  color: var(--neon-cyan);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+body.mobile-layout .mobile-controls:not(.hidden) button[data-action="harddrop"] {
+  background: rgba(255, 77, 158, 0.14);
+  border-color: rgba(255, 77, 158, 0.34);
+}
+
+body.mobile-layout .mobile-controls:not(.hidden) button[data-action="hold"] {
+  background: rgba(255, 215, 0, 0.12);
+  border-color: rgba(255, 215, 0, 0.28);
+  color: var(--neon-gold);
+}
+
+body.mobile-layout .mobile-controls:not(.hidden) button[data-action="skill1"],
+body.mobile-layout .mobile-controls:not(.hidden) button[data-action="skill2"],
+body.mobile-layout .mobile-controls:not(.hidden) button[data-action="skill3"] {
+  height: max(calc(var(--mobile-btn-size) - 14px), 42px);
+  font-size: 0.9rem;
+}
+
+body.mobile-layout .battle-widgets {
+  bottom: calc(var(--mobile-controls-height) + 8px + var(--safe-bottom));
+}
+
+body.mobile-layout .touch-debug-panel {
+  left: 12px;
+  right: 12px;
+  min-width: 0;
+}
+
+@media (orientation: landscape) {
+  .stage.mobile .lane.player-lane {
+    max-width: min(100%, 560px);
+    grid-template-columns: minmax(58px, auto) minmax(0, 1fr);
+  }
+
+  .stage.mobile .lane.player-lane .board-wrap {
+    max-height: min(52dvh, 100%);
+  }
+
+  .stage.mobile .lane.ai-lane {
+    width: min(74px, 18vw);
+  }
+
+  body.mobile-layout .mobile-controls:not(.hidden) {
+    width: min(98vw, 720px);
+    gap: 6px;
+    padding: 6px 10px;
+  }
+
+  body.mobile-layout .mobile-controls:not(.hidden) button {
+    height: max(calc(var(--mobile-btn-size) - 10px), 50px);
+    font-size: 0.98rem;
+  }
+
+  body.mobile-layout .mobile-controls:not(.hidden) button[data-action="skill1"],
+  body.mobile-layout .mobile-controls:not(.hidden) button[data-action="skill2"],
+  body.mobile-layout .mobile-controls:not(.hidden) button[data-action="skill3"] {
+    height: max(calc(var(--mobile-btn-size) - 20px), 36px);
+  }
 }

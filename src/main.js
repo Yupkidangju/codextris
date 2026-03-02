@@ -1,5 +1,5 @@
 ﻿/*
- * [v3.17.0] 메인 엔트리 포인트
+ * [v3.17.1] 메인 엔트리 포인트
  * 
  * 작성일: 2026-03-01
  * 변경사항: 
@@ -22,6 +22,7 @@
  *   - [v3.15.0] 전투 콜아웃 중복 억제와 STATUS/INCOMING 압축 렌더링 추가
  *   - [v3.15.1] 모바일 보드 축소/버튼 확대 기준 보정
  *   - [v3.17.0] 모바일 보드 컨테이너 기반 리사이징과 ResizeObserver 동기화
+ *   - [v3.17.1] stage.mobile 클래스 기반 강제 오버라이드와 가로 모바일 판정 보정
  */
 
 import { createGame } from "./game/core/engine.js";
@@ -1078,7 +1079,7 @@ function recordRuntimeError(source, error) {
 
 function exportSessionDiagnostics() {
   const snapshot = {
-    buildVersion: "3.17.0",
+    buildVersion: "3.17.1",
     deviceMeta: getDeviceMeta(),
     uiSettings,
     sessionDiagnostics,
