@@ -98,6 +98,113 @@ const sfxVolumeSlider = document.getElementById("sfxVolumeSlider");
 const sfxVolumeValue = document.getElementById("sfxVolumeValue");
 const voiceVolumeSlider = document.getElementById("voiceVolumeSlider");
 const voiceVolumeValue = document.getElementById("voiceVolumeValue");
+
+// [v3.16.0] 캔버스 동적 해상도 관리
+const CANVAS_BASE_SIZES = {
+  board: { cols: 10, rows: 20 },
+  miniBoard: { cols: 10, rows: 20 },
+  hold: { cols: 4, rows: 4 },
+  next: { cols: 4, rows: 3 }
+};
+
+/**
+ * 현재 환경에 따른 셀 크기 계산
+ * @returns {number} 셀 크기 (px)
+ */
+function getCellSizeForEnvironment() {
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const isPortrait = window.matchMedia('(orientation: portrait)').matches;
+  const containerWidth = document.querySelector('.lane.player-lane')?.clientWidth || window.innerWidth;
+  
+  if (isMobile) {
+    // 모바일: 화면 너비 기준으로 셀 크기 계산
+    // 여유 공간을 남기기 위해 약간의 마진 고려
+    const availableWidth = isPortrait 
+      ? containerWidth * 0.4  // 세로: 플레이어 보드 영역
+      : containerWidth * 0.35; // 가로: 더 작은 공간
+    
+    // 10열 기준, 최소 16px ~ 최대 24px
+    const cellSize = Math.floor(availableWidth / 10);
+    return Math.max(16, Math.min(24, cellSize));
+  }
+  
+  // 데스크톱: 기본 30px
+  return 30;
+}
+
+/**
+ * 캔버스 크기 동적 조정
+ * @param {HTMLCanvasElement} canvas - 대상 캔버스
+ * @param {number} cols - 열 수
+ * @param {number} rows - 행 수
+ * @param {number} cellSize - 셀 크기 (px)
+ */
+function resizeCanvas(canvas, cols, rows, cellSize) {
+  if (!canvas) return;
+  
+  const dpr = window.devicePixelRatio || 1;
+  const width = cols * cellSize;
+  const height = rows * cellSize;
+  
+  // 내부 픽셀 크기 (DPR 고려)
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  
+  // CSS 크기
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
+  
+  // 컨텍스트 스케일 설정
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+  }
+  
+  // 데이터 속성 저장
+  canvas.dataset.cellSize = cellSize;
+  canvas.dataset.cols = cols;
+  canvas.dataset.rows = rows;
+}
+
+/**
+ * 게임 캔버스 초기화 (모든 캔버스 크기 설정)
+ */
+function setupCanvases() {
+  const cellSize = getCellSizeForEnvironment();
+  const miniCellSize = Math.floor(cellSize * 0.7); // AI 보드는 70% 크기
+  
+  // 메인 보드
+  resizeCanvas(playerCanvas, CANVAS_BASE_SIZES.board.cols, CANVAS_BASE_SIZES.board.rows, cellSize);
+  resizeCanvas(aiCanvas, CANVAS_BASE_SIZES.miniBoard.cols, CANVAS_BASE_SIZES.miniBoard.rows, miniCellSize);
+  
+  // Hold 미리보기
+  resizeCanvas(holdCanvas, CANVAS_BASE_SIZES.hold.cols, CANVAS_BASE_SIZES.hold.rows, cellSize);
+  
+  // Next 미리보기들
+  [next1Canvas, next2Canvas, next3Canvas, next4Canvas, next5Canvas].forEach(canvas => {
+    resizeCanvas(canvas, CANVAS_BASE_SIZES.next.cols, CANVAS_BASE_SIZES.next.rows, cellSize);
+  });
+  
+  console.log(`[v3.16.0] 캔버스 초기화 완료: 셀 크기 ${cellSize}px`);
+}
+
+/**
+ * 화면 크기 변경 시 캔버스 재조정
+ */
+function handleCanvasResize() {
+  // 디바운스 처리를 위해 타임아웃 사용
+  if (window.canvasResizeTimeout) {
+    clearTimeout(window.canvasResizeTimeout);
+  }
+  window.canvasResizeTimeout = setTimeout(() => {
+    setupCanvases();
+    // 게임이 실행 중이면 화면 갱신
+    if (game && typeof game.requestRender === 'function') {
+      game.requestRender();
+    }
+  }, 250);
+}
 const settingsMuteBtn = document.getElementById("settingsMuteBtn");
 const settingsTrackBtn = document.getElementById("settingsTrackBtn");
 const settingsTestBtn = document.getElementById("settingsTestBtn");
@@ -2895,4 +3002,12 @@ function loop(now) {
 
   requestAnimationFrame(loop);
 }
+
+// [v3.16.0] 캔버스 초기화 및 리사이즈 이벤트 설정
+setupCanvases();
+window.addEventListener('resize', handleCanvasResize);
+window.addEventListener('orientationchange', () => {
+  setTimeout(handleCanvasResize, 300);
+});
+
 requestAnimationFrame(loop);
