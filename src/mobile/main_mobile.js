@@ -223,6 +223,7 @@ const appState = {
     repeats: 0,
     lastMs: 0,
   },
+  rotateHintTimer: null,
   lastFrameAt: performance.now(),
 };
 
@@ -372,7 +373,22 @@ function completeMission(id) {
 
 function syncRotateHint() {
   const portrait = window.matchMedia("(orientation: portrait)").matches;
-  setHidden(dom.rotateHint, !portrait || !appState.battleStarted);
+  if (!portrait || !appState.battleStarted) {
+    setHidden(dom.rotateHint, true);
+    if (appState.rotateHintTimer) {
+      clearTimeout(appState.rotateHintTimer);
+      appState.rotateHintTimer = null;
+    }
+    return;
+  }
+  setHidden(dom.rotateHint, false);
+  if (appState.rotateHintTimer) {
+    clearTimeout(appState.rotateHintTimer);
+  }
+  appState.rotateHintTimer = setTimeout(() => {
+    setHidden(dom.rotateHint, true);
+    appState.rotateHintTimer = null;
+  }, 2200);
 }
 
 function showBattleCallout(title, subtitle = "") {
@@ -537,7 +553,7 @@ function applyAudioSettings() {
 function applyVisualSettings() {
   document.documentElement.style.setProperty("--mobile-scale", `${uiSettings.mobileScale}%`);
   document.documentElement.style.setProperty("--mobile-btn-scale", String(uiSettings.mobileScale / 100));
-  document.documentElement.style.setProperty("--mobile-btn-size", `${Math.round(68 * (uiSettings.mobileScale / 100))}px`);
+  document.documentElement.style.setProperty("--mobile-btn-size", `${Math.round(60 * (uiSettings.mobileScale / 100))}px`);
   game.setScreenShakeScale((uiSettings.shake || 0) / 100);
   bgFx.setReducedMotion(!!uiSettings.reducedFx || !!uiSettings.lowPower);
   dom.body.dataset.mobileLayout = uiSettings.layout;

@@ -39,7 +39,7 @@ export function detectMobile() {
   if (document.body?.classList.contains("mobile-shell")) {
     return true;
   }
-  return window.matchMedia("(max-width: 960px), ((max-height: 600px) and (pointer: coarse))").matches;
+  return window.matchMedia("(max-width: 768px), ((max-height: 600px) and (pointer: coarse))").matches;
 }
 
 /**
