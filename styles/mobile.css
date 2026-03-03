@@ -85,21 +85,21 @@ body.mobile-shell .app {
 body.mobile-shell .topbar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
-  height: calc(56px + var(--safe-top));
+  height: calc(48px + var(--safe-top));
   padding:
-    calc(8px + var(--safe-top))
-    calc(12px + var(--safe-right))
-    8px
-    calc(12px + var(--safe-left));
+    calc(6px + var(--safe-top))
+    calc(10px + var(--safe-right))
+    6px
+    calc(10px + var(--safe-left));
   background: rgba(4, 10, 22, 0.92);
   border-bottom: 1px solid rgba(80, 150, 255, 0.16);
   backdrop-filter: blur(12px);
 }
 
 body.mobile-shell .topbar h1 {
-  font-size: 0.86rem;
+  font-size: 0.72rem;
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: 0.08em;
@@ -109,7 +109,7 @@ body.mobile-shell .topbar h1 {
 body.mobile-shell .controls-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 body.mobile-shell .difficulty-badge,
@@ -117,13 +117,13 @@ body.mobile-shell .neon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 34px;
-  padding: 0 10px;
-  border-radius: 12px;
+  min-height: 30px;
+  padding: 0 9px;
+  border-radius: 11px;
   border: 1px solid var(--panel-border);
   background: rgba(8, 16, 30, 0.88);
   color: var(--text-primary);
-  font-size: 0.72rem;
+  font-size: 0.64rem;
   font-weight: 700;
 }
 
@@ -163,7 +163,7 @@ body.mobile-shell .eyebrow,
 body.mobile-shell .modal-eyebrow,
 body.mobile-shell .meta-label,
 body.mobile-shell .widget-label {
-  font-size: 0.64rem;
+  font-size: 0.54rem;
   letter-spacing: 0.16em;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -358,32 +358,32 @@ body.mobile-shell .mission-copy small {
 body.mobile-shell .mobile-status-bar {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  gap: 6px;
   padding:
-    8px
-    calc(12px + var(--safe-right))
-    8px
-    calc(12px + var(--safe-left));
+    6px
+    calc(10px + var(--safe-right))
+    6px
+    calc(10px + var(--safe-left));
   background: rgba(5, 10, 20, 0.84);
   border-bottom: 1px solid rgba(100, 180, 255, 0.14);
 }
 
 body.mobile-shell .status-item {
   min-width: 0;
-  padding: 8px;
+  padding: 6px 7px;
 }
 
 body.mobile-shell .label {
   display: block;
-  font-size: 0.58rem;
+  font-size: 0.52rem;
   color: var(--text-muted);
   text-transform: uppercase;
 }
 
 body.mobile-shell .value {
   display: block;
-  margin-top: 3px;
-  font-size: 0.88rem;
+  margin-top: 2px;
+  font-size: 0.76rem;
   font-weight: 800;
 }
 
@@ -412,14 +412,14 @@ body.mobile-shell #stage.stage {
   flex: 1 1 auto;
   min-height: 0;
   display: grid;
-  justify-items: center;
+  justify-items: start;
   align-content: start;
-  gap: 10px;
+  gap: 8px;
   padding:
-    10px
-    calc(12px + var(--safe-right))
+    8px
+    calc(10px + var(--safe-right))
     calc(var(--mobile-controls-height) + 116px + var(--safe-bottom))
-    calc(12px + var(--safe-left));
+    calc(8px + var(--safe-left));
   overflow: hidden;
 }
 
@@ -440,10 +440,11 @@ body.mobile-shell .mobile-settings-control {
 
 body.mobile-shell .lane.player-lane {
   width: 100%;
-  max-width: 220px;
+  max-width: 236px;
   display: grid;
-  gap: 8px;
-  justify-items: center;
+  gap: 6px;
+  justify-items: start;
+  transform: translateX(-10%);
 }
 
 body.mobile-shell .board-wrap {
@@ -453,9 +454,9 @@ body.mobile-shell .board-wrap {
 }
 
 body.mobile-shell .lane.player-lane .board-wrap {
-  width: min(39vw, 156px);
+  width: min(43vw, 172px);
   aspect-ratio: 1 / 2;
-  max-height: min(32vh, 312px);
+  max-height: min(35vh, 344px);
   padding: 8px;
   border-radius: 18px;
   background: linear-gradient(180deg, rgba(5, 12, 22, 0.96) 0%, rgba(10, 18, 34, 0.9) 100%);
@@ -475,10 +476,10 @@ body.mobile-shell .lane.ai-lane canvas {
 }
 
 body.mobile-shell .player-side {
-  width: 100%;
+  width: 58px;
   display: grid;
-  grid-template-columns: 66px minmax(0, 1fr);
-  gap: 8px;
+  grid-template-columns: 1fr;
+  gap: 6px;
   align-items: start;
 }
 
@@ -486,24 +487,23 @@ body.mobile-shell .block-preview {
   padding: 8px;
 }
 
-body.mobile-shell .hold-preview canvas {
-  width: 50px !important;
-  height: 50px !important;
+body.mobile-shell .hold-preview {
+  display: none;
 }
 
 body.mobile-shell .next-preview {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 4px;
 }
 
 body.mobile-shell .next-preview .label {
-  grid-column: 1 / -1;
+  grid-column: auto;
 }
 
 body.mobile-shell .next-preview canvas {
-  width: 28px !important;
-  height: 22px !important;
+  width: 40px !important;
+  height: 26px !important;
 }
 
 body.mobile-shell .next-preview .extra-next {
@@ -514,7 +514,7 @@ body.mobile-shell .lane.ai-lane {
   position: absolute;
   top: 10px;
   right: calc(12px + var(--safe-right));
-  width: 64px;
+  width: 74px;
   padding: 6px;
   border-radius: 12px;
   background: rgba(8, 15, 28, 0.92);
@@ -562,13 +562,13 @@ body.mobile-shell .battle-widgets {
   bottom: calc(var(--mobile-controls-height) + 4px + var(--safe-bottom));
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 6px;
   z-index: 8;
 }
 
 body.mobile-shell .widget-card {
   min-width: 0;
-  padding: 10px;
+  padding: 8px 9px;
 }
 
 body.mobile-shell .widget-head {
@@ -580,7 +580,7 @@ body.mobile-shell .widget-head {
 }
 
 body.mobile-shell .widget-value {
-  font-size: 1rem;
+  font-size: 0.86rem;
   font-weight: 800;
   color: var(--neon-cyan);
 }
@@ -604,17 +604,17 @@ body.mobile-shell .briefing-chip,
 body.mobile-shell .result-feedback-item {
   display: inline-flex;
   align-items: center;
-  min-height: 28px;
-  padding: 5px 8px;
+  min-height: 24px;
+  padding: 4px 7px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(100, 180, 255, 0.14);
-  font-size: 0.58rem;
+  font-size: 0.52rem;
 }
 
 body.mobile-shell .status-empty,
 body.mobile-shell .incoming-empty {
-  font-size: 0.74rem;
+  font-size: 0.66rem;
   color: var(--text-secondary);
 }
 

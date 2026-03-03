@@ -165,7 +165,8 @@ function getCanvasScaleMetrics() {
 
   return {
     cellSize: 30,
-    miniCellSize: 21,
+    // [v3.20.6] 데스크톱 AI 보드가 과도하게 작아 보이지 않도록 플레이어 보드와 동일한 셀 크기로 되돌린다.
+    miniCellSize: 30,
     previewCellSize: 30,
   };
 }

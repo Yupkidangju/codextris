@@ -372,23 +372,11 @@ function completeMission(id) {
 }
 
 function syncRotateHint() {
-  const portrait = window.matchMedia("(orientation: portrait)").matches;
-  if (!portrait || !appState.battleStarted) {
-    setHidden(dom.rotateHint, true);
-    if (appState.rotateHintTimer) {
-      clearTimeout(appState.rotateHintTimer);
-      appState.rotateHintTimer = null;
-    }
-    return;
-  }
-  setHidden(dom.rotateHint, false);
+  setHidden(dom.rotateHint, true);
   if (appState.rotateHintTimer) {
     clearTimeout(appState.rotateHintTimer);
-  }
-  appState.rotateHintTimer = setTimeout(() => {
-    setHidden(dom.rotateHint, true);
     appState.rotateHintTimer = null;
-  }, 2200);
+  }
 }
 
 function showBattleCallout(title, subtitle = "") {
