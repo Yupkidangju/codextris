@@ -7,7 +7,7 @@
 ### 소개
 좌측 플레이어 vs 우측 AI 대전 테트리스 게임입니다. 현대적인 네온 UI와 화려한 시각 효과, 풍부한 게임성을 갖춘 프로덕션급 웹 게임입니다.
 
-### 주요 기능 (v3.20.2)
+### 주요 기능 (v3.20.3)
 - 🎮 **3가지 필살기 스킬**: 블라인드(1), 블록 스왑(2), 가비지 반사(3)
 - 🔥 **피버 모드**: 10콤보+ 시 BGM 1.3배속 + 공격력 1.5배
 - 💣 **아이템 시스템**: 폭탄(3x3 파괴), 별(1줄 클리어), 실드(가비지 차단)
@@ -38,6 +38,7 @@
 - 🧱 **Shared Battle Engine**: `core / battle / audio / AI / 전투 규칙`은 공유하고, 앱 셸과 HUD/오버레이/버튼/렌더는 분리한다
 - 📏 **Logical Canvas Scaling Fix**: 모바일 전투 보드는 backing store가 아니라 실제 CSS 픽셀 기준 크기로 렌더되어, 고해상도 스마트폰에서도 블록과 보드가 과대 확대되지 않는다
 - 📲 **Battle Size Clamp**: 모바일 전투 시작 직후 플레이어 보드와 AI PiP는 전용 상한 크기로 다시 맞춰져, 오버레이 해제 후에도 거대 캔버스로 튀지 않는다
+- 🎛️ **Standalone Mobile Stylesheet**: 모바일 앱은 데스크톱 `main.css`를 더 이상 import하지 않고, 별도 `mobile.css`만으로 전투/오버레이/터치 UI를 렌더한다
 - 🧪 **Adapter Path Deprecated**: `create_game_session`, `hud_renderer`, `feedback_view`, `overlay_view`, `overlay_controller` 기반 점진 분리 경로는 중간 실험으로만 남기고 최종 구조에서 재판단한다
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo`가 잔상 행을 소모해 공격을 절삭, 무효화, 역교란, 역압박한다
 - 🧪 **Final DEV Polish**: DEV PANEL에 `shift / residue / resonance / counter` 메타와 세션 카운터를 추가해 장시간 튜닝이 쉬워졌다
