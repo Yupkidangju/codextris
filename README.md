@@ -7,7 +7,7 @@
 ### 소개
 좌측 플레이어 vs 우측 AI 대전 테트리스 게임입니다. 현대적인 네온 UI와 화려한 시각 효과, 풍부한 게임성을 갖춘 프로덕션급 웹 게임입니다.
 
-### 주요 기능 (v3.20.8)
+### 주요 기능 (v3.20.9)
 - 🎮 **3가지 필살기 스킬**: 블라인드(1), 블록 스왑(2), 가비지 반사(3)
 - 🔥 **피버 모드**: 10콤보+ 시 BGM 1.3배속 + 공격력 1.5배
 - 💣 **아이템 시스템**: 폭탄(3x3 파괴), 별(1줄 클리어), 실드(가비지 차단)
@@ -44,6 +44,7 @@
 - 📐 **Portrait Battle Tuning**: 모바일 세로 배틀은 상단 HUD를 줄이고, 플레이어 보드를 더 키워 왼쪽으로 정렬하며, AI PiP를 키우고 `NEXT`를 세로형으로 재배치한다
 - ↔️ **Next-Board Two-Column Layout**: 모바일 세로 전장에서는 `NEXT`가 왼쪽 세로 컬럼에 고정되고, 플레이어 보드는 그 바로 오른쪽에 더 크게 배치된다
 - 📏 **Narrow Next Column**: 모바일 `NEXT` 컬럼은 더 얇게 줄이고, 메인 보드는 그만큼 더 크게 확장해 전장 가독성을 높인다
+- 🧩 **Portrait Margin Polish**: 모바일 세로 전장의 `NEXT / BOARD / AI / STATUS` 컬럼 마진과 간격을 보기 좋게 다시 다듬었다
 - 🧪 **Adapter Path Deprecated**: `create_game_session`, `hud_renderer`, `feedback_view`, `overlay_view`, `overlay_controller` 기반 점진 분리 경로는 중간 실험으로만 남기고 최종 구조에서 재판단한다
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo`가 잔상 행을 소모해 공격을 절삭, 무효화, 역교란, 역압박한다
 - 🧪 **Final DEV Polish**: DEV PANEL에 `shift / residue / resonance / counter` 메타와 세션 카운터를 추가해 장시간 튜닝이 쉬워졌다

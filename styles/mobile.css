@@ -412,7 +412,7 @@ body.mobile-shell #stage.stage {
   flex: 1 1 auto;
   min-height: 0;
   display: grid;
-  justify-items: start;
+  justify-items: center;
   align-content: start;
   gap: 8px;
   padding:
@@ -441,8 +441,9 @@ body.mobile-shell .mobile-settings-control {
 body.mobile-shell .lane.player-lane {
   position: relative;
   width: 100%;
-  max-width: 250px;
-  min-height: min(43vh, 408px);
+  max-width: 258px;
+  min-height: min(44vh, 420px);
+  margin-left: 6px;
 }
 
 body.mobile-shell .board-wrap {
@@ -452,10 +453,10 @@ body.mobile-shell .board-wrap {
 }
 
 body.mobile-shell .lane.player-lane .board-wrap {
-  margin-left: 42px;
-  width: min(50vw, 196px);
+  margin-left: 40px;
+  width: min(50.5vw, 198px);
   aspect-ratio: 1 / 2;
-  max-height: min(43vh, 412px);
+  max-height: min(44vh, 420px);
   padding: 8px;
   border-radius: 18px;
   background: linear-gradient(180deg, rgba(5, 12, 22, 0.96) 0%, rgba(10, 18, 34, 0.9) 100%);
@@ -476,12 +477,12 @@ body.mobile-shell .lane.ai-lane canvas {
 
 body.mobile-shell .player-side {
   position: absolute;
-  top: 0;
+  top: 8px;
   left: 0;
-  width: 38px;
+  width: 36px;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 4px;
+  gap: 5px;
   align-items: start;
   justify-items: center;
   z-index: 2;
@@ -510,7 +511,7 @@ body.mobile-shell .next-preview .label {
 }
 
 body.mobile-shell .next-preview canvas {
-  width: 28px !important;
+  width: 26px !important;
   height: 18px !important;
 }
 
@@ -520,9 +521,9 @@ body.mobile-shell .next-preview .extra-next {
 
 body.mobile-shell .lane.ai-lane {
   position: absolute;
-  top: 10px;
-  right: calc(12px + var(--safe-right));
-  width: 74px;
+  top: 12px;
+  right: calc(8px + var(--safe-right));
+  width: 78px;
   padding: 6px;
   border-radius: 12px;
   background: rgba(8, 15, 28, 0.92);
@@ -565,12 +566,12 @@ body.mobile-shell .boss-hp-bar {
 
 body.mobile-shell .battle-widgets {
   position: fixed;
-  left: calc(12px + var(--safe-left));
-  right: calc(12px + var(--safe-right));
+  left: calc(14px + var(--safe-left));
+  right: calc(14px + var(--safe-right));
   bottom: calc(var(--mobile-controls-height) + 4px + var(--safe-bottom));
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  gap: 8px;
   z-index: 8;
 }
 
