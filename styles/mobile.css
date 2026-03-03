@@ -360,6 +360,10 @@ body.mobile-shell .settings-grid {
   grid-template-columns: 1fr;
 }
 
+body.mobile-shell .mobile-settings-control {
+  display: none;
+}
+
 body.mobile-shell .keybind-grid {
   max-height: 220px;
   overflow-y: auto;

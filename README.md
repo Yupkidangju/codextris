@@ -7,7 +7,7 @@
 ### 소개
 좌측 플레이어 vs 우측 AI 대전 테트리스 게임입니다. 현대적인 네온 UI와 화려한 시각 효과, 풍부한 게임성을 갖춘 프로덕션급 웹 게임입니다.
 
-### 주요 기능 (v3.18.6)
+### 주요 기능 (v3.20.0)
 - 🎮 **3가지 필살기 스킬**: 블라인드(1), 블록 스왑(2), 가비지 반사(3)
 - 🔥 **피버 모드**: 10콤보+ 시 BGM 1.3배속 + 공격력 1.5배
 - 💣 **아이템 시스템**: 폭탄(3x3 파괴), 별(1줄 클리어), 실드(가비지 차단)
@@ -33,20 +33,17 @@
 - ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE`가 `Neon Shift`와 결합해 추가 파동, 실드, 넥스트 교란, 파형 압박으로 이어진다
 - 🧭 **HUD Polish**: 상태 칩 우선순위 정렬, `RESIDUE xN`, `+N MORE` 축약으로 전투 가독성을 높였다
 - ⚖️ **Balance Pass**: 보스 규칙 공격 빈도/지속시간, 패턴 공격 강도, 피버 연장량을 조정해 전투 압박을 더 읽기 쉽게 다듬었다
-- 📱 **Mobile Refactor Planned**: 기존 반응형 모바일 보정을 정리하고, 별도 모바일 페이지와 전용 블록 렌더/HUD/버튼 시스템으로 재구성할 예정이다
-- 📲 **Dedicated Mobile Page**: `mobile.html`과 모바일 전용 스타일/엔트리를 추가했고, 모바일 DOM에서 데스크톱 중앙 HUD를 제거한 채 공용 게임 로직을 그대로 연결한다
-- 🧱 **Shared Session Bootstrap**: `create_game_session` 계층으로 오디오/배경/임팩트/게임 생성기를 묶어, 데스크톱과 모바일 셸이 같은 게임 세션 조립 경로를 재사용한다
-- 🖥️ **Shared HUD Renderer**: `hud_renderer` 계층으로 기본 HUD, `STATUS`, `INCOMING` 렌더를 분리해 모바일 셸이 공용 UI 상태 갱신 경로를 재사용한다
-- 📣 **Shared Feedback View**: `feedback_view` 계층으로 전투 콜아웃과 DEV PANEL 렌더를 분리해 모바일 셸이 같은 피드백 표시 경로를 재사용한다
-- 🪟 **Shared Overlay View**: `overlay_view` 계층으로 브리핑, 결과, 최근 전투 카드 오버레이 렌더를 분리해 모바일 셸이 공용 오버레이 표시 경로를 재사용한다
-- 🎛️ **Shared Overlay Controller**: `overlay_controller` 계층으로 브리핑/설정/결과 오버레이의 상태 전이와 일시정지 연계를 분리해 모바일 셸이 같은 오버레이 상태 머신을 재사용한다
+- 📱 **Mobile Independent Web App**: 모바일은 `mobile.html + mobile.css + main_mobile.js + mobile_renderer.js` 조합의 별도 웹앱으로 동작하며, 데스크톱 `main.js`와 직접 결합하지 않는다
+- 📲 **Dual Entry Strategy**: 데스크톱은 `index.html`, 모바일은 `mobile.html`로 진입하며 접속 환경에 따라 자동 분기한다
+- 🧱 **Shared Battle Engine**: `core / battle / audio / AI / 전투 규칙`은 공유하고, 앱 셸과 HUD/오버레이/버튼/렌더는 분리한다
+- 🧪 **Adapter Path Deprecated**: `create_game_session`, `hud_renderer`, `feedback_view`, `overlay_view`, `overlay_controller` 기반 점진 분리 경로는 중간 실험으로만 남기고 최종 구조에서 재판단한다
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo`가 잔상 행을 소모해 공격을 절삭, 무효화, 역교란, 역압박한다
 - 🧪 **Final DEV Polish**: DEV PANEL에 `shift / residue / resonance / counter` 메타와 세션 카운터를 추가해 장시간 튜닝이 쉬워졌다
 
 ### 다음 마일스톤
-- 모바일은 현재의 반응형 축소판을 계속 누적하지 않고, 게임 로직을 공유하는 별도 앱 셸로 재구성할 예정입니다.
-- 목표 구조는 `공용 게임 코어 + 데스크톱 셸 + 모바일 셸`이며, 모바일용 블록 렌더, 버튼, HUD, 오버레이를 따로 설계합니다.
-- 현재 모바일 화면은 전면 리팩터링 대상이며, 새 모바일 페이지가 들어오기 전까지는 데스크톱 환경을 기준 경험으로 봅니다.
+- 모바일 독립 웹앱 1차 구현은 완료됐고, 다음 단계는 레거시 모바일 보정 경로 제거와 모바일 전용 계층 세분화입니다.
+- 목표 구조는 계속 `공용 게임 코어 + 데스크톱 앱 + 모바일 앱`이며, 앞으로는 모바일 오버레이/입력/렌더를 더 잘게 분리합니다.
+- 기존 모바일 어댑터/반응형 보정 경로는 정리 대상으로 유지합니다.
 
 ### 조작법
 | 동작 | 키 |
@@ -86,7 +83,7 @@
 ### Introduction
 Player (left) vs AI (right) battle Tetris game. A production-grade web game with modern neon UI, dazzling visual effects, and rich gameplay.
 
-### Key Features (v3.18.6)
+### Key Features (v3.20.0)
 - 🎮 **3 Special Skills**: Blind (1), Block Swap (2), Garbage Reflect (3)
 - 🔥 **Fever Mode**: 10+ combo triggers 1.3x BGM speed + 1.5x attack power
 - 💣 **Item System**: Bomb (3x3 destroy), Star (1 line clear), Shield (block garbage)
@@ -112,15 +109,17 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 - ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE` now resonate with `Neon Shift` to trigger extra wave pressure, shields, next scrambling, or pulse attacks
 - 🧭 **HUD Polish**: Status chips are priority-sorted, show `RESIDUE xN`, and collapse overflow into `+N MORE` for cleaner combat readability
 - ⚖️ **Balance Pass**: Boss rule-break frequency, debuff durations, pattern strength, and fever extension were tuned down for clearer pacing
-- 📱 **Mobile Refactor Planned**: The old responsive-mobile patch path is being retired in favor of a dedicated mobile page, renderer preset, HUD, and control shell
-- 📲 **Dedicated Mobile Page**: `mobile.html` plus a dedicated mobile stylesheet and entry point now mount a separate mobile game shell
+- 📱 **Mobile Independent Web App**: Mobile now runs as its own web app through `mobile.html + mobile.css + main_mobile.js + mobile_renderer.js`, separate from the desktop `main.js`
+- 📲 **Dual Entry Strategy**: Desktop enters through `index.html`, mobile enters through `mobile.html`, and runtime detection routes players to the correct app
+- 🧱 **Shared Battle Engine**: `core / battle / audio / AI / combat rules` stay shared while HUD, overlays, controls, and rendering are rebuilt per shell
+- 🧪 **Adapter Path Deprecated**: The incremental adapter path around `create_game_session`, `hud_renderer`, `feedback_view`, `overlay_view`, and `overlay_controller` is now treated as an intermediate experiment
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo` consume residue rows to shave, nullify, scramble back, or echo pressure
 - 🧪 **Final DEV Polish**: The dev panel now exposes `shift / residue / resonance / counter` metadata and longer-session tuning counters
 
 ### Next Milestone
-- Mobile will stop accumulating responsive desktop fixes and move to a separate app shell while still sharing the same game logic.
-- The target architecture is `shared game core + desktop shell + mobile shell`, with dedicated mobile block rendering, controls, HUD, and overlays.
-- The current mobile presentation is being replaced, so the stable reference experience remains the desktop shell until the new page lands.
+- The first independent mobile web app pass is now implemented; the next step is removing legacy responsive mobile leftovers and splitting more mobile-only layers.
+- The target architecture remains `shared game core + desktop app + mobile app`, with mobile-specific rendering, controls, HUD, and overlays.
+- The old responsive and adapter-based mobile path remains deprecated and is now a cleanup target.
 
 ### Controls
 | Action | Key |
@@ -160,7 +159,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 概要
 左側プレイヤー対右側AIの対戦テトリスゲームです。モダンなネオンUIと華麗なビジュアルエフェクト、豊かなゲーム性を持つプロダクション級ウェブゲームです。
 
-### 主な機能 (v3.18.6)
+### 主な機能 (v3.20.0)
 - 🎮 **3つの必殺技スキル**: ブラインド(1)、ブロック交換(2)、ガーベジ反射(3)
 - 🔥 **フィーバーモード**: 10コンボ以上でBGM 1.3倍速 + 攻撃力1.5倍
 - 💣 **アイテムシステム**: 爆弾(3x3破壊)、スター(1ライン消去)、シールド(ガーベジブロック)
@@ -186,15 +185,17 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 - ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE` が `Neon Shift` と共鳴し、追加波動、即時シールド、NEXT攪乱、パルス攻撃へ発展
 - 🧭 **HUD Polish**: 状態チップを優先度順に並べ、`RESIDUE xN` と `+N MORE` で戦闘情報を圧縮表示
 - ⚖️ **Balance Pass**: ボス規則攻撃の頻度・持続、パターン攻撃強度、フィーバー延長量を抑えて読みやすいテンポに調整
-- 📱 **Mobile Refactor Planned**: 既存のレスポンシブ補正を整理し、専用モバイルページとブロック描画/HUD/ボタンを別シェルとして再構築予定
-- 📲 **Dedicated Mobile Page**: `mobile.html` と専用スタイル/専用エントリを追加し、デスクトップとは分離したモバイルゲームシェルの実装を開始
+- 📱 **Mobile Independent Web App**: モバイルは `mobile.html + mobile.css + main_mobile.js + mobile_renderer.js` を使う独立ウェブアプリとして動作し、デスクトップ `main.js` と直接結合しない
+- 📲 **Dual Entry Strategy**: デスクトップは `index.html`、モバイルは `mobile.html` から起動し、環境判定で適切なアプリへ分岐する
+- 🧱 **Shared Battle Engine**: `core / battle / audio / AI / 戦闘ルール` は共通で使い、HUD・オーバーレイ・ボタン・描画はシェルごとに作り直す
+- 🧪 **Adapter Path Deprecated**: `create_game_session` などの段階的アダプタ経路は中間実験として扱い、最終構造の前提にはしない
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo` が残像行を消費して圧力を削り、無効化し、逆攪乱し、反撃する
 - 🧪 **Final DEV Polish**: DEV PANEL に `shift / residue / resonance / counter` メタと長時間調整用カウンタを追加
 
 ### 次のマイルストーン
-- モバイルは既存のレスポンシブ補正を積み増すのではなく、同じゲームロジックを共有する別アプリシェルへ移行する予定です。
-- 目標構造は `共通ゲームコア + デスクトップシェル + モバイルシェル` で、モバイル専用のブロック描画、ボタン、HUD、オーバーレイを個別設計します。
-- 現在のモバイル表示は全面リファクタ対象であり、新モバイルページが入るまではデスクトップシェルを安定基準とします。
+- モバイルはデスクトップ UI を引き継ぐのではなく、同じ戦闘エンジンを共有する独立ウェブアプリとして作り直します。
+- 目標構造は `共通ゲームコア + デスクトップアプリ + モバイルアプリ` で、モバイル専用の描画、ボタン、HUD、オーバーレイを別実装します。
+- 既存のレスポンシブ補正やアダプタ経路は最終形ではなく、新モバイルアプリへの移行に合わせて整理します。
 
 ### 操作方法
 | 操作 | キー |
@@ -234,7 +235,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 介紹
 左側玩家對戰右側AI的俄羅斯方塊遊戲。具有現代霓虹UI、華麗視覺效果和豐富遊戲性的專業級網頁遊戲。
 
-### 主要功能 (v3.18.6)
+### 主要功能 (v3.20.0)
 - 🎮 **3種必殺技**: 失明(1)、方塊交換(2)、垃圾反射(3)
 - 🔥 **狂熱模式**: 10連擊以上BGM 1.3倍速 + 攻擊力1.5倍
 - 💣 **道具系統**: 炸彈(3x3破壞)、星星(消除1行)、盾牌(阻擋垃圾行)
@@ -260,15 +261,17 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 - ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE` 會與 `Neon Shift` 共鳴，衍生成額外波動、即時護盾、NEXT 擾亂與脈衝攻擊
 - 🧭 **HUD Polish**: 狀態晶片依優先度排序，並用 `RESIDUE xN` 與 `+N MORE` 壓縮戰鬥資訊
 - ⚖️ **Balance Pass**: 下調 Boss 規則攻擊頻率與持續時間、樣式攻擊強度與 Fever 延長量，讓戰鬥節奏更清楚
-- 📱 **Mobile Refactor Planned**: 現有的響應式行動版修補將逐步退役，改為獨立的行動頁面與專用方塊渲染/HUD/按鈕系統
-- 📲 **Dedicated Mobile Page**: 已新增 `mobile.html` 與行動端專用樣式/入口，開始真正掛載與桌面版分離的行動遊戲 shell
+- 📱 **Mobile Independent Web App**: 行動版現在透過 `mobile.html + mobile.css + main_mobile.js + mobile_renderer.js` 作為獨立網頁 app 運作，不再直接依賴桌面 `main.js`
+- 📲 **Dual Entry Strategy**: 桌面由 `index.html` 進入，行動版由 `mobile.html` 進入，並依裝置環境自動分流
+- 🧱 **Shared Battle Engine**: `core / battle / audio / AI / 戰鬥規則` 共享，HUD、覆蓋層、按鈕與渲染則按 shell 重做
+- 🧪 **Adapter Path Deprecated**: `create_game_session` 等漸進式 adapter 路線只保留為中間實驗，不再視為最終架構
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo` 會消耗殘像列來削減、無效化、反向擾亂與回推壓力
 - 🧪 **Final DEV Polish**: DEV PANEL 新增 `shift / residue / resonance / counter` 中繼資料與長局調校計數
 
 ### 下一個里程碑
-- 行動版不再持續堆疊桌面版的響應式修補，而是改為共享相同遊戲邏輯的獨立 app shell。
-- 目標架構是 `共用遊戲核心 + 桌面 shell + 行動 shell`，並為行動端另行設計方塊渲染、按鈕、HUD 與各種覆蓋層。
-- 目前的行動版畫面屬於全面重構對象，在新頁面落地前，穩定參考體驗仍以桌面 shell 為準。
+- 行動版將改為真正獨立的網頁 app，而不是繼續繼承桌面 UI。
+- 目標架構是 `共用遊戲核心 + 桌面 app + 行動 app`，並為行動端重做方塊渲染、按鈕、HUD 與覆蓋層。
+- 舊的響應式與 adapter 路徑不再是最終方向，會隨著新行動 app 落地而逐步退役。
 
 ### 操作方式
 | 動作 | 按鍵 |
@@ -308,7 +311,7 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 ### 介绍
 左侧玩家对战右侧AI的俄罗斯方块游戏。具有现代霓虹UI、华丽视觉效果和丰富游戏性的专业级网页游戏。
 
-### 主要功能 (v3.18.6)
+### 主要功能 (v3.20.0)
 - 🎮 **3种必杀技**: 致盲(1)、方块交换(2)、垃圾反射(3)
 - 🔥 **狂热模式**: 10连击以上BGM 1.3倍速 + 攻击力1.5倍
 - 💣 **道具系统**: 炸弹(3x3破坏)、星星(消除1行)、盾牌(阻挡垃圾行)
@@ -334,15 +337,17 @@ Player (left) vs AI (right) battle Tetris game. A production-grade web game with
 - ⚛️ **Layer Resonance**: `FORGE / GUARD / SCAN / SURGE` 会与 `Neon Shift` 共鸣，衍生额外波动压制、即时护盾、NEXT 扰乱与脉冲攻击
 - 🧭 **HUD Polish**: 状态芯片按优先级排序，并用 `RESIDUE xN` 与 `+N MORE` 压缩战斗信息
 - ⚖️ **Balance Pass**: 下调 Boss 规则攻击频率与持续时间、样式攻击强度与 Fever 延长量，让战斗节奏更清晰
-- 📱 **Mobile Refactor Planned**: 现有响应式移动端补丁将逐步退役，改为独立的移动页面与专用方块渲染/HUD/按钮系统
-- 📲 **Dedicated Mobile Page**: 已新增 `mobile.html` 与移动端专用样式/入口，开始真正挂载与桌面版分离的移动游戏 shell
+- 📱 **Mobile Independent Web App**: 移动端现在通过 `mobile.html + mobile.css + main_mobile.js + mobile_renderer.js` 作为独立网页 app 运行，不再直接依赖桌面 `main.js`
+- 📲 **Dual Entry Strategy**: 桌面通过 `index.html` 进入，移动端通过 `mobile.html` 进入，并根据设备环境自动分流
+- 🧱 **Shared Battle Engine**: `core / battle / audio / AI / 战斗规则` 共享，HUD、覆盖层、按钮与渲染则按 shell 重做
+- 🧪 **Adapter Path Deprecated**: `create_game_session` 等渐进式 adapter 路线只保留为中间实验，不再视为最终架构
 - 🛡️ **Layer Counter Matrix**: `Forge Break / Guard Lattice / Scan Trace / Surge Echo` 会消耗残像行来削减、无效化、反向扰乱与回推压制
 - 🧪 **Final DEV Polish**: DEV PANEL 新增 `shift / residue / resonance / counter` 元数据与长局调校计数
 
 ### 下一阶段
-- 移动端将不再继续叠加桌面版响应式补丁，而是改为共享同一套游戏逻辑的独立 app shell。
-- 目标架构是 `共享游戏核心 + 桌面 shell + 移动 shell`，并为移动端单独设计方块渲染、按钮、HUD 与各类覆盖层。
-- 当前移动端展示属于全面重构对象，在新页面落地前，稳定参考体验仍以桌面 shell 为准。
+- 移动端将改为真正独立的网页 app，而不是继续继承桌面 UI。
+- 目标架构是 `共享游戏核心 + 桌面 app + 移动 app`，并为移动端重做方块渲染、按钮、HUD 与覆盖层。
+- 旧的响应式与 adapter 路线不再是最终方向，会随着新移动 app 落地而逐步退役。
 
 ### 操作方式
 | 动作 | 按键 |
@@ -390,5 +395,5 @@ MIT License
 
 ---
 
-**Version:** 3.18.6  
-**Last Updated:** 2026-03-02
+**Version:** 3.20.0  
+**Last Updated:** 2026-03-03

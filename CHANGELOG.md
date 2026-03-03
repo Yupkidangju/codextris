@@ -8,6 +8,34 @@
 
 ## [Unreleased]
 
+## [3.20.0] - 2026-03-03
+
+### 추가됨 (Added)
+- 모바일 독립 웹앱 1차 구현
+  - `mobile.html`, `styles/mobile.css`, `src/mobile/main_mobile.js`, `src/mobile/mobile_renderer.js` 조합으로 모바일 앱을 데스크톱 `main.js`와 분리된 별도 엔트리로 재구성
+  - 모바일 앱은 공용 전투 엔진(`createGame`), 공용 오디오 엔진(`AudioEngine`), 공용 배경/임팩트 시스템만 공유하고 HUD/오버레이/터치 흐름은 모바일 전용으로 다시 작성
+  - 모바일 전용 타이틀, 미션 체크리스트, 최근 전적 카드, 브리핑, 설정, 결과, 일시정지 흐름을 `main_mobile.js`에서 직접 관리
+  - 모바일 전용 캔버스 매니저가 플레이어 보드 컨테이너를 기준으로 셀 크기를 계산하고, AI 보드를 PiP 비율로 축소하며 HOLD/NEXT 프리뷰를 함께 다시 렌더
+  - 모바일 앱 전용 HUD가 `STATUS`, `INCOMING`, 보스 HP, 스킬 버튼, DEV PANEL, BGM 메타를 독립적으로 갱신
+
+### 변경됨 (Changed)
+- 모바일 전략 상태 갱신
+  - `README.md`, `spec.md`, `BUILD_GUIDE.md`, `IMPLEMENTATION_SUMMARY.md`, `DESIGN_DECISIONS.md`, `designs.md`, `audit_roadmap.md`, `LESSONS_LEARNED.md`를 `모바일 독립 웹앱 구현 1차 완료` 기준으로 동기화
+  - 기존 `모바일 독립 웹앱 Planned` 표기를 실제 구현 상태로 교체하고, 다음 단계 초점을 `레거시 모바일 보정 제거`와 `모바일 전용 세부 계층 추가 분리`로 이동
+
+## [3.19.0] - 2026-03-03
+
+### 변경됨 (Changed)
+- 모바일 전략 전면 재정의
+  - 모바일을 데스크톱 반응형 하위셋이나 공용 어댑터 기반 셸로 보지 않고, 같은 전투 엔진을 공유하는 별도 웹앱으로 다시 정의했다
+  - 데스크톱은 기존 앱을 유지하고, 모바일은 `mobile.html`에서 시작하는 독립 앱으로 개발한다는 원칙을 문서 전반에 반영했다
+  - 공용 범위를 `core / battle / audio / AI / 전투 규칙`으로 고정하고, HUD/버튼/블록 렌더/오버레이/입력은 모바일 전용으로 새로 작성하는 방향으로 로드맵을 수정했다
+
+### 폐기됨 (Deprecated)
+- 모바일 분리 1차 실험 경로
+  - `main.js` 재사용, 공용 HUD/오버레이 어댑터 추출, 데스크톱 상태 머신 보존 위주의 모바일 분리 경로는 최종 구조에서 제외했다
+  - `create_game_session`, `hud_renderer`, `feedback_view`, `overlay_view`, `overlay_controller`는 중간 실험 산물로 분류하고 재사용 여부를 재판단하기로 했다
+
 ## [3.18.6] - 2026-03-03
 
 ### 추가됨 (Added)

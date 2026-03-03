@@ -1,6 +1,6 @@
 ﻿<!--
   Dual Tetris Battle: Neon Wars
-  [v3.18.1] 모바일 전용 HTML - 데스크톱 HUD 의존을 걷어낸 모바일 전용 DOM 셸
+  [v3.20.0] 모바일 전용 HTML - 데스크톱 main.js와 분리된 모바일 독립 웹앱 DOM 셸
   
   작성일: 2026-03-03
   작성자: AI Agent
@@ -270,7 +270,7 @@
         <button id="settingsCloseBtn" class="modal-close" aria-label="설정 닫기">CLOSE</button>
       </div>
       <div class="settings-grid">
-        <section class="settings-group">
+        <section class="settings-group mobile-settings-audio">
           <h3>AUDIO</h3>
           <label class="setting-row" for="masterVolumeSlider">
             <span>MASTER</span>
@@ -324,7 +324,7 @@
             </div>
           </div>
         </section>
-        <section class="settings-group">
+        <section class="settings-group mobile-settings-control">
           <h3>CONTROL</h3>
           <label class="setting-row" for="inputBufferSlider">
             <span>INPUT PRESET</span>
@@ -417,7 +417,7 @@
             기본은 쉬운 프리셋으로 두고, 고급 입력 설정을 열면 DAS/ARR/버퍼/IRS/IHS를 조정할 수 있습니다. 재바인딩 중에는 다음 키 입력이 즉시 해당 액션으로 저장됩니다.
           </p>
         </section>
-        <section class="settings-group">
+        <section class="settings-group mobile-settings-display">
           <h3>DISPLAY</h3>
           <label class="setting-row" for="shakeSlider">
             <span>SCREEN SHAKE</span>
@@ -438,7 +438,7 @@
             화면 흔들림과 임팩트 강도를 조절합니다. 저자극 FX는 배경/콜아웃 강도를 줄이고, 저사양 모드는 배경 밀도와 흔들림을 더 낮춥니다. DEV PANEL은 FPS, 입력, 오디오, 보스 상태와 마지막 오류를 숨김 카드로 표시합니다.
           </p>
         </section>
-        <section class="settings-group">
+        <section class="settings-group mobile-settings-mobile">
           <h3>MOBILE</h3>
           <label class="setting-row" for="mobileScaleSlider">
             <span>BUTTON SIZE</span>
