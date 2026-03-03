@@ -852,6 +852,7 @@ async function beginBattle() {
   appState.activeOverlay = null;
   setHidden(dom.startScreen, true);
   setHidden(dom.mobileControls, false);
+  dom.stage.classList.remove("prestart");
   // [v3.20.2] 시작 오버레이가 사라진 직후 실제 전투 영역 크기를 다시 읽어 모바일 캔버스를 강제 재조정한다.
   canvasManager.resizeAll();
   requestAnimationFrame(() => canvasManager.resizeAll());
@@ -877,6 +878,7 @@ function returnToTitle() {
   appState.activeOverlay = null;
   setHidden(dom.startScreen, false);
   setHidden(dom.mobileControls, true);
+  dom.stage.classList.add("prestart");
   setOverlayVisible(dom.pauseOverlay, false);
   setOverlayVisible(dom.resultOverlay, false);
   setOverlayVisible(dom.settingsOverlay, false);
@@ -1021,6 +1023,7 @@ function bindEvents() {
 
 async function init() {
   dom.body.classList.add("mobile-shell", "mobile-layout");
+  dom.stage.classList.add("prestart");
   canvasManager.attach();
   bgFx.resize();
   bindEvents();

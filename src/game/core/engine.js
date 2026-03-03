@@ -725,7 +725,10 @@ function drawStyledCell(ctx, x, y, cell, color, options = {}) {
  */
 function drawBoard(ctx, state, board, fx) {
   const canvas = ctx.canvas;
-  const logical = getCanvasLogicalMetrics(canvas, 10, 20);
+  const isMobileShell = document.body?.classList.contains("mobile-shell");
+  const logical = isMobileShell
+    ? getCanvasLogicalMetrics(canvas, 10, 20)
+    : { width: canvas.width, height: canvas.height, cell: canvas.width / 10 };
   ctx.clearRect(0, 0, logical.width, logical.height);
   const cell = logical.cell;
   const now = performance.now();
@@ -1707,7 +1710,9 @@ export function createGame(config) {
     who.state.id = id;
     who.state.inputTuning = { ...(id === "player" ? (config.getInputTuning?.() || INPUT_PRESETS.standard) : INPUT_PRESETS.standard) };
     const canvas = id === "player" ? config.playerCanvas : config.aiCanvas;
-    who.cellSize = getCanvasLogicalMetrics(canvas, who.board.width, who.board.height).cell;
+    who.cellSize = document.body?.classList.contains("mobile-shell")
+      ? getCanvasLogicalMetrics(canvas, who.board.width, who.board.height).cell
+      : (canvas.width / who.board.width);
   }
 
   function syncAiDifficultyState() {
